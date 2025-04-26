@@ -1,12 +1,5 @@
 html {
   color: #333333;
-  /* 背景图片设置 */
-  background: rgba(6, 1, 24, 0.8);
-  background-image: url('fa.png');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  filter: brightness(0.8);
   background: #ffffff;
   scroll-behavior: smooth;
   -ms-text-size-adjust: 100%;
