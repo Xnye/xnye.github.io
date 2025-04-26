@@ -1,5 +1,11 @@
 html {
   color: #333333;
+  background: rgba(255, 255, 255, 0.8);
+  background-image: url('https://github.com/Xnye/xnye.github.io/blob/main/static/css/fa.png?raw=true');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  filter: brightness(1);
   background: #ffffff;
   scroll-behavior: smooth;
   -ms-text-size-adjust: 100%;
