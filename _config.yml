@@ -4,10 +4,10 @@ plugins:
   - jekyll-regex-replace
 
 # SEO相关信息
-title: Blog
+title: 0x0000B10G
 description: Hi
 keywords: Xnye
-footerText: 'Copyright © ?'
+footerText: 'Pure [ANTi] Memory'
 
 # 这些不要动
 permalink: /posts/:year/:month/:day/:title.html
