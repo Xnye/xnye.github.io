@@ -4,7 +4,7 @@ plugins:
   - jekyll-regex-replace
 
 # SEO相关信息
-title: 0x0000B10G
+title: 0x000B10G
 description: Hi
 keywords: Xnye
 footerText: 'Pure [ANTi] Memory'
