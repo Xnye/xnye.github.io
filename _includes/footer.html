@@ -9,9 +9,67 @@
     <span>总访问量</span>
     <span id="busuanzi_value_site_pv"></span>
   {% endif %}
-  <div class="footer-btn theme-toggler hide">
-    <i class="svg-icon icon-theme-light"></i>
+
+  <div class="footer-btn settings-toggle hide" title="个性化设置" aria-label="打开个性化设置" aria-controls="settings-panel" aria-expanded="false">
+    <i class="svg-icon icon-settings"></i>
   </div>
+
+  <div class="settings-panel hide" id="settings-panel" role="dialog" aria-label="个性化设置">
+    <div class="settings-panel-header">
+      <div>
+        <strong>个性化设置</strong>
+        <p>在一个面板里统一调主题、字号、行高和阅读配色。</p>
+      </div>
+      <button type="button" class="settings-reset">恢复默认</button>
+    </div>
+
+    <div class="settings-group">
+      <span class="settings-label">主题模式</span>
+      <div class="settings-options" data-setting="themeMode">
+        <button type="button" class="settings-chip" data-value="system">跟随系统</button>
+        <button type="button" class="settings-chip" data-value="light">浅色</button>
+        <button type="button" class="settings-chip" data-value="dark">深色</button>
+      </div>
+    </div>
+
+    <div class="settings-group">
+      <div class="settings-row">
+        <span class="settings-label">阅读字号</span>
+        <span class="settings-value font-size-value">17px</span>
+      </div>
+      <input type="range" class="settings-range font-size-slider" min="15" max="22" step="1" value="17" aria-label="阅读字号" />
+    </div>
+
+    <div class="settings-group">
+      <div class="settings-row">
+        <span class="settings-label">行高</span>
+        <span class="settings-value line-height-value">1.72</span>
+      </div>
+      <input type="range" class="settings-range line-height-slider" min="1.45" max="2.05" step="0.05" value="1.72" aria-label="行高" />
+    </div>
+
+    <div class="settings-group">
+      <span class="settings-label">强调色</span>
+      <div class="settings-swatches accent-swatches" data-setting="accent">
+        <button type="button" class="settings-swatch accent-ink" data-value="ink" aria-label="墨潮"></button>
+        <button type="button" class="settings-swatch accent-lagoon" data-value="lagoon" aria-label="泻湖"></button>
+        <button type="button" class="settings-swatch accent-vermilion" data-value="vermilion" aria-label="朱砂"></button>
+        <button type="button" class="settings-swatch accent-moss" data-value="moss" aria-label="苔原"></button>
+        <button type="button" class="settings-swatch accent-mulberry" data-value="mulberry" aria-label="桑雾"></button>
+        <button type="button" class="settings-swatch accent-brass" data-value="brass" aria-label="暮金"></button>
+      </div>
+    </div>
+
+    <div class="settings-group">
+      <span class="settings-label">页面底色</span>
+      <div class="settings-swatches surface-swatches" data-setting="surface">
+        <button type="button" class="settings-swatch surface-pure" data-value="pure" aria-label="纯白"></button>
+        <button type="button" class="settings-swatch surface-paper" data-value="paper" aria-label="米纸"></button>
+        <button type="button" class="settings-swatch surface-mist" data-value="mist" aria-label="云雾"></button>
+      </div>
+    </div>
+  </div>
+
   <div class="footer-btn to-top">
     <i class="svg-icon icon-arrow-top"></i>
   </div>

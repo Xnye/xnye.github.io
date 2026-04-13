@@ -1,95 +1,76 @@
 html.dark {
-  color: #c9d1d9;
-  background: #0d1117;
+  --bg-color: #0e131a;
+  --bg-spot-a: rgba(85, 114, 134, 0.22);
+  --bg-spot-b: rgba(119, 95, 70, 0.16);
+  --text-color: #d7dee6;
+  --muted-color: #9cabbc;
+  --soft-text-color: #8f9baa;
+  --heading-color: #f8fafc;
+  --border-color: rgba(148, 163, 184, 0.16);
+  --surface-color: rgba(17, 24, 39, 0.76);
+  --surface-strong: rgba(19, 27, 40, 0.92);
+  --surface-muted: rgba(32, 43, 59, 0.78);
+  --surface-elevated: rgba(20, 29, 43, 0.88);
+  --code-inline-bg: rgba(148, 163, 184, 0.16);
+  --code-inline-color: #edf2f7;
+  --blockquote-bg: rgba(56, 72, 93, 0.28);
+  --blockquote-border: #506176;
+  --table-stripe: rgba(29, 40, 56, 0.52);
+  --button-bg: rgba(255, 255, 255, 0.14);
+  --button-icon: #f8fafc;
+  --panel-bg: rgba(14, 20, 31, 0.84);
+  --panel-border: rgba(148, 163, 184, 0.16);
+  --panel-shadow: 0 32px 90px rgba(2, 6, 23, 0.48);
+  --page-shadow: 0 28px 80px rgba(2, 6, 23, 0.38);
+  --shadow-soft: 0 16px 40px rgba(2, 6, 23, 0.32);
+  --selection-bg: var(--accent-color);
+  --selection-text: #ffffff;
+  --footer-link-color: #c8d5e6;
+  color: var(--text-color);
+  background: var(--bg-color);
 }
-html.dark ::selection {
-  background-color: #327bd4;
-  color: #ffffff;
+
+html.dark[data-surface='paper'] {
+  --bg-color: #14171d;
+  --bg-spot-a: rgba(144, 120, 84, 0.16);
+  --bg-spot-b: rgba(92, 97, 84, 0.14);
+  --surface-color: rgba(22, 28, 36, 0.78);
+  --surface-strong: rgba(24, 31, 40, 0.92);
+  --surface-muted: rgba(41, 48, 58, 0.82);
+  --surface-elevated: rgba(26, 33, 42, 0.88);
+  --blockquote-bg: rgba(68, 76, 88, 0.3);
+  --table-stripe: rgba(28, 35, 44, 0.54);
 }
+
+html.dark[data-surface='mist'] {
+  --bg-color: #101722;
+  --bg-spot-a: rgba(90, 123, 158, 0.22);
+  --bg-spot-b: rgba(80, 119, 116, 0.15);
+  --surface-color: rgba(15, 23, 34, 0.78);
+  --surface-strong: rgba(18, 27, 40, 0.92);
+  --surface-muted: rgba(34, 47, 66, 0.8);
+  --surface-elevated: rgba(18, 28, 42, 0.9);
+  --blockquote-bg: rgba(48, 65, 87, 0.32);
+  --table-stripe: rgba(24, 35, 50, 0.58);
+}
+
 html.dark ::-webkit-scrollbar-thumb {
-  border-radius: 2px;
-  background-color: rgba(153, 153, 153, 0.6);
+  background-color: rgba(148, 163, 184, 0.42);
 }
+
 html.dark img {
-  filter: brightness(0.8) contrast(1.2);
+  filter: brightness(0.9) contrast(1.06);
 }
+
+html.dark .header .menu a {
+  border-color: rgba(148, 163, 184, 0.16);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+html.dark .header .menu a:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
 html.dark .header .logo {
-  opacity: 0.8;
-}
-html.dark .footer a {
-  color: #58a6ff;
-}
-html.dark .list-category div a {
-  border-bottom: 1px solid #8b949e;
-}
-html.dark .list-post li .date {
-  color: #8b949e;
-}
-html.dark .list-post li .categories a {
-  color: #8b949e;
-}
-html.dark .hover-underline:after {
-  background-color: #c9d1d9;
-}
-html.dark .page-post .title {
-  color: #ffffff;
-}
-html.dark .page-post img {
-  box-shadow: none;
-}
-html.dark .page-post code {
-  background-color: rgba(240, 246, 252, 0.15);
-  color: #c9d1d9;
-}
-html.dark .page-post a {
-  color: #58a6ff;
-  border-bottom: 1px solid #58a6ff;
-}
-html.dark .page-post strong {
-  color: #ffffff;
-}
-html.dark .page-post b {
-  color: #ffffff;
-}
-html.dark .page-post blockquote {
-  border-left: 3px solid #3b434b;
-  background-color: rgba(59, 67, 75, 0.15);
-  color: #8b949e;
-}
-html.dark .page-post .table-container {
-  border: 1px solid #3b434b;
-}
-html.dark .page-post table {
-  border: 1px solid #3b434b;
-}
-html.dark .page-post tr {
-  border-bottom: 1px solid #3b434b;
-}
-html.dark .page-post hr {
-  background-color: #30363d;
-}
-html.dark .page-post table tr:nth-child(even) {
-  background-color: #161b22;
-}
-html.dark .page-post iframe {
-  opacity: 0.8;
-}
-html.dark .page-search #search-input {
-  color: #f0f6fc;
-  border: 1px solid #21262d;
-}
-html.dark .page-search #search-input::-webkit-input-placeholder {
-  color: #c2c3c5;
-}
-html.dark .page-search h1 i {
-  background-color: #ffffff;
-}
-html.dark .page-search .list-search .content {
-  color: #a6aeb7;
-}
-html.dark .footer-btn {
-  background-color: rgba(255, 255, 255, 0.4);
-}
-html.dark .footer-btn i {
-  opacity: 0.7;
+  opacity: 0.9;
 }

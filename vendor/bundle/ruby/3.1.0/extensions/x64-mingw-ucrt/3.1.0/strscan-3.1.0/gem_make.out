@@ -1,0 +1,18 @@
+current directory: C:/Users/Xnye/代码/GIT/xnye.github.io/vendor/bundle/ruby/3.1.0/gems/strscan-3.1.0/ext/strscan
+C:/Ruby31-x64/bin/ruby.exe -I C:/Ruby31-x64/lib/ruby/3.1.0 extconf.rb
+checking for onig_region_memsize() in ruby.h... yes
+checking for rb_reg_onig_match() in ruby.h... no
+creating Makefile
+
+current directory: C:/Users/Xnye/代码/GIT/xnye.github.io/vendor/bundle/ruby/3.1.0/gems/strscan-3.1.0/ext/strscan
+make DESTDIR\= sitearchdir\=./.gem.20260413-11532-ulx82a sitelibdir\=./.gem.20260413-11532-ulx82a clean
+
+current directory: C:/Users/Xnye/代码/GIT/xnye.github.io/vendor/bundle/ruby/3.1.0/gems/strscan-3.1.0/ext/strscan
+make DESTDIR\= sitearchdir\=./.gem.20260413-11532-ulx82a sitelibdir\=./.gem.20260413-11532-ulx82a
+generating strscan-x64-mingw-ucrt.def
+compiling strscan.c
+linking shared-object strscan.so
+
+current directory: C:/Users/Xnye/代码/GIT/xnye.github.io/vendor/bundle/ruby/3.1.0/gems/strscan-3.1.0/ext/strscan
+make DESTDIR\= sitearchdir\=./.gem.20260413-11532-ulx82a sitelibdir\=./.gem.20260413-11532-ulx82a install
+/usr/bin/install -c -m 0755 strscan.so ./.gem.20260413-11532-ulx82a

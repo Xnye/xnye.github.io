@@ -1,473 +1,616 @@
-// 打印主题标识,请保留出处
 ;(function () {
-  var style1 = 'background:#4BB596;color:#ffffff;border-radius: 2px;'
-  var style2 = 'color:auto;'
-  var author = ' TMaize'
-  var github = ' https://github.com/TMaize/tmaize-blog'
-  var build = ' ' + blog.buildAt.substr(0, 4)
-  build += '/' + blog.buildAt.substr(4, 2)
-  build += '/' + blog.buildAt.substr(6, 2)
-  build += ' ' + blog.buildAt.substr(8, 2)
-  build += ':' + blog.buildAt.substr(10, 2)
-  console.info('%c Author %c' + author, style1, style2)
-  console.info('%c Build  %c' + build, style1, style2)
-  console.info('%c GitHub %c' + github, style1, style2)
-})()
+  var root = document.documentElement
 
-/**
- * 工具，允许多次onload不被覆盖
- * @param {方法} func
- */
-blog.addLoadEvent = function (func) {
-  var oldonload = window.onload
-  if (typeof window.onload != 'function') {
-    window.onload = func
-  } else {
-    window.onload = function () {
-      oldonload()
-      func()
-    }
-  }
-}
-
-/**
- * 工具，兼容的方式添加事件
- * @param {单个DOM节点} dom
- * @param {事件名} eventName
- * @param {事件方法} func
- * @param {是否捕获} useCapture
- */
-blog.addEvent = function (dom, eventName, func, useCapture) {
-  if (window.attachEvent) {
-    dom.attachEvent('on' + eventName, func)
-  } else if (window.addEventListener) {
-    if (useCapture != undefined && useCapture === true) {
-      dom.addEventListener(eventName, func, true)
-    } else {
-      dom.addEventListener(eventName, func, false)
-    }
-  }
-}
-
-/**
- * 工具，DOM添加某个class
- * @param {单个DOM节点} dom
- * @param {class名} className
- */
-blog.addClass = function (dom, className) {
-  if (!blog.hasClass(dom, className)) {
-    var c = dom.className || ''
-    dom.className = c + ' ' + className
-    dom.className = blog.trim(dom.className)
-  }
-}
-
-/**
- * 工具，DOM是否有某个class
- * @param {单个DOM节点} dom
- * @param {class名} className
- */
-blog.hasClass = function (dom, className) {
-  var list = (dom.className || '').split(/\s+/)
-  for (var i = 0; i < list.length; i++) {
-    if (list[i] == className) return true
-  }
-  return false
-}
-
-/**
- * 工具，DOM删除某个class
- * @param {单个DOM节点} dom
- * @param {class名} className
- */
-blog.removeClass = function (dom, className) {
-  if (blog.hasClass(dom, className)) {
-    var list = (dom.className || '').split(/\s+/)
-    var newName = ''
+  function each(list, fn) {
     for (var i = 0; i < list.length; i++) {
-      if (list[i] != className) newName = newName + ' ' + list[i]
+      fn(list[i], i)
     }
-    dom.className = blog.trim(newName)
   }
-}
 
-/**
- * 工具，兼容问题，某些OPPO手机不支持ES5的trim方法
- * @param {字符串} str
- */
-blog.trim = function (str) {
-  return str.replace(/^\s+|\s+$/g, '')
-}
-
-/**
- * 工具，转义html字符
- * @param {字符串} str
- */
-blog.htmlEscape = function (str) {
-  var temp = document.createElement('div')
-  temp.innerText = str
-  str = temp.innerHTML
-  temp = null
-  return str
-}
-
-/**
- * 工具，转换实体字符防止XSS
- * @param {字符串} str
- */
-blog.encodeHtml = function (html) {
-  var o = document.createElement('div')
-  o.innerText = html
-  var temp = o.innerHTML
-  o = null
-  return temp
-}
-
-/**
- * 工具， 转义正则关键字
- * @param {字符串} str
- */
-blog.encodeRegChar = function (str) {
-  // \ 必须在第一位
-  var arr = ['\\', '.', '^', '$', '*', '+', '?', '{', '}', '[', ']', '|', '(', ')']
-  arr.forEach(function (c) {
-    var r = new RegExp('\\' + c, 'g')
-    str = str.replace(r, '\\' + c)
-  })
-  return str
-}
-
-/**
- * 工具，Ajax
- * @param {字符串} str
- */
-blog.ajax = function (option, success, fail) {
-  var xmlHttp = null
-  if (window.XMLHttpRequest) {
-    xmlHttp = new XMLHttpRequest()
-  } else {
-    xmlHttp = new ActiveXObject('Microsoft.XMLHTTP')
+  function setTransitionFlag() {
+    root.setAttribute('transition', '')
+    window.setTimeout(function () {
+      root.removeAttribute('transition')
+    }, 360)
   }
-  var url = option.url
-  var method = (option.method || 'GET').toUpperCase()
-  var sync = option.sync === false ? false : true
-  var timeout = option.timeout || 10000
 
-  var timer
-  var isTimeout = false
-  xmlHttp.open(method, url, sync)
-  xmlHttp.onreadystatechange = function () {
-    if (isTimeout) {
-      fail({
-        error: '请求超时'
-      })
+  function setActiveValue(selector, value) {
+    each(document.querySelectorAll(selector), function (item) {
+      var isActive = item.getAttribute('data-value') === String(value)
+      if (isActive) {
+        blog.addClass(item, 'active')
+      } else {
+        blog.removeClass(item, 'active')
+      }
+      item.setAttribute('aria-pressed', isActive ? 'true' : 'false')
+    })
+  }
+
+  function syncAppearancePanel() {
+    var settings = blog.settings || blog.appearance.readStored()
+    var fontSizeSlider = document.querySelector('.font-size-slider')
+    var fontSizeValue = document.querySelector('.font-size-value')
+    var lineHeightSlider = document.querySelector('.line-height-slider')
+    var lineHeightValue = document.querySelector('.line-height-value')
+
+    if (fontSizeSlider) fontSizeSlider.value = settings.fontSize
+    if (fontSizeValue) fontSizeValue.innerText = settings.fontSize + 'px'
+    if (lineHeightSlider) lineHeightSlider.value = settings.lineHeight
+    if (lineHeightValue) lineHeightValue.innerText = settings.lineHeight.toFixed(2)
+    setActiveValue('.settings-options [data-value]', settings.themeMode)
+    setActiveValue('.accent-swatches [data-value]', settings.accent)
+    setActiveValue('.surface-swatches [data-value]', settings.surface)
+  }
+
+  function setSettingsPanelOpen(open) {
+    var panel = document.querySelector('.settings-panel')
+    var toggle = document.querySelector('.settings-toggle')
+    if (!panel || !toggle) return
+
+    if (open) {
+      blog.removeClass(panel, 'hide')
+      blog.addClass(toggle, 'active')
+      toggle.setAttribute('aria-expanded', 'true')
     } else {
-      if (xmlHttp.readyState == 4) {
-        if (xmlHttp.status == 200) {
+      blog.addClass(panel, 'hide')
+      blog.removeClass(toggle, 'active')
+      toggle.setAttribute('aria-expanded', 'false')
+    }
+  }
+
+  function applyAppearancePatch(patch) {
+    setTransitionFlag()
+    blog.updateAppearance(patch)
+    syncAppearancePanel()
+  }
+
+  function bindAppearanceOptions() {
+    each(document.querySelectorAll('.settings-options [data-value]'), function (item) {
+      blog.addEvent(item, 'click', function () {
+        applyAppearancePatch({
+          themeMode: item.getAttribute('data-value')
+        })
+      })
+    })
+
+    each(document.querySelectorAll('.accent-swatches [data-value]'), function (item) {
+      blog.addEvent(item, 'click', function () {
+        applyAppearancePatch({
+          accent: item.getAttribute('data-value')
+        })
+      })
+    })
+
+    each(document.querySelectorAll('.surface-swatches [data-value]'), function (item) {
+      blog.addEvent(item, 'click', function () {
+        applyAppearancePatch({
+          surface: item.getAttribute('data-value')
+        })
+      })
+    })
+
+    var slider = document.querySelector('.font-size-slider')
+    if (slider) {
+      blog.addEvent(slider, 'input', function () {
+        applyAppearancePatch({
+          fontSize: parseInt(slider.value, 10)
+        })
+      })
+    }
+
+    var lineHeightSlider = document.querySelector('.line-height-slider')
+    if (lineHeightSlider) {
+      blog.addEvent(lineHeightSlider, 'input', function () {
+        applyAppearancePatch({
+          lineHeight: parseFloat(lineHeightSlider.value)
+        })
+      })
+    }
+
+    var reset = document.querySelector('.settings-reset')
+    if (reset) {
+      blog.addEvent(reset, 'click', function () {
+        applyAppearancePatch(blog.appearance.defaults)
+      })
+    }
+  }
+
+  console.info('%c Author %c TMaize', 'background:#4BB596;color:#ffffff;border-radius:2px;', 'color:auto;')
+  console.info(
+    '%c Build  %c ' +
+      blog.buildAt.substr(0, 4) +
+      '/' +
+      blog.buildAt.substr(4, 2) +
+      '/' +
+      blog.buildAt.substr(6, 2) +
+      ' ' +
+      blog.buildAt.substr(8, 2) +
+      ':' +
+      blog.buildAt.substr(10, 2),
+    'background:#4BB596;color:#ffffff;border-radius:2px;',
+    'color:auto;'
+  )
+  console.info('%c GitHub %c https://github.com/TMaize/tmaize-blog', 'background:#4BB596;color:#ffffff;border-radius:2px;', 'color:auto;')
+
+  blog.addLoadEvent = function (func) {
+    var oldonload = window.onload
+    if (typeof window.onload !== 'function') {
+      window.onload = func
+    } else {
+      window.onload = function () {
+        oldonload()
+        func()
+      }
+    }
+  }
+
+  blog.addEvent = function (dom, eventName, func, useCapture) {
+    if (!dom) return
+    if (window.attachEvent) {
+      dom.attachEvent('on' + eventName, func)
+    } else if (window.addEventListener) {
+      dom.addEventListener(eventName, func, useCapture === true)
+    }
+  }
+
+  blog.addClass = function (dom, className) {
+    if (!dom || blog.hasClass(dom, className)) return
+    var current = dom.className || ''
+    dom.className = blog.trim(current + ' ' + className)
+  }
+
+  blog.hasClass = function (dom, className) {
+    if (!dom) return false
+    var list = (dom.className || '').split(/\s+/)
+    for (var i = 0; i < list.length; i++) {
+      if (list[i] === className) return true
+    }
+    return false
+  }
+
+  blog.removeClass = function (dom, className) {
+    if (!dom || !blog.hasClass(dom, className)) return
+    var list = (dom.className || '').split(/\s+/)
+    var next = ''
+    for (var i = 0; i < list.length; i++) {
+      if (list[i] !== className) next += ' ' + list[i]
+    }
+    dom.className = blog.trim(next)
+  }
+
+  blog.trim = function (str) {
+    return (str || '').replace(/^\s+|\s+$/g, '')
+  }
+
+  blog.htmlEscape = function (str) {
+    var temp = document.createElement('div')
+    temp.innerText = str
+    str = temp.innerHTML
+    temp = null
+    return str
+  }
+
+  blog.encodeHtml = function (html) {
+    var temp = document.createElement('div')
+    temp.innerText = html
+    html = temp.innerHTML
+    temp = null
+    return html
+  }
+
+  blog.encodeRegChar = function (str) {
+    var chars = ['\\', '.', '^', '$', '*', '+', '?', '{', '}', '[', ']', '|', '(', ')']
+    each(chars, function (c) {
+      var reg = new RegExp('\\' + c, 'g')
+      str = str.replace(reg, '\\' + c)
+    })
+    return str
+  }
+
+  blog.ajax = function (option, success, fail) {
+    var xmlHttp = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP')
+    var url = option.url
+    var method = (option.method || 'GET').toUpperCase()
+    var sync = option.sync === false ? false : true
+    var timeout = option.timeout || 10000
+    var timer = null
+    var isTimeout = false
+
+    xmlHttp.open(method, url, sync)
+    xmlHttp.onreadystatechange = function () {
+      if (isTimeout) {
+        fail({ error: 'request timeout' })
+        return
+      }
+      if (xmlHttp.readyState === 4) {
+        if (xmlHttp.status === 200) {
           success(xmlHttp.responseText)
         } else {
-          fail({
-            error: '状态错误',
-            code: xmlHttp.status
-          })
+          fail({ error: 'request failed', code: xmlHttp.status })
         }
-        //清除未执行的定时函数
         clearTimeout(timer)
       }
     }
-  }
-  timer = setTimeout(function () {
-    isTimeout = true
-    fail({
-      error: '请求超时'
-    })
-    xmlHttp.abort()
-  }, timeout)
-  xmlHttp.send()
-}
 
-/**
- * 特效：点击页面文字冒出特效
- */
-blog.initClickEffect = function (textArr) {
-  function createDOM(text) {
-    var dom = document.createElement('span')
-    dom.innerText = text
-    dom.style.left = 0
-    dom.style.top = 0
-    dom.style.position = 'fixed'
-    dom.style.fontSize = '12px'
-    dom.style.whiteSpace = 'nowrap'
-    dom.style.webkitUserSelect = 'none'
-    dom.style.userSelect = 'none'
-    dom.style.opacity = 0
-    dom.style.transform = 'translateY(0)'
-    dom.style.webkitTransform = 'translateY(0)'
-    return dom
+    timer = window.setTimeout(function () {
+      isTimeout = true
+      fail({ error: 'request timeout' })
+      xmlHttp.abort()
+    }, timeout)
+
+    xmlHttp.send()
   }
 
-  blog.addEvent(window, 'click', function (ev) {
-    let target = ev.target
-    while (target !== document.documentElement) {
-      if (target.tagName.toLocaleLowerCase() == 'a') return
-      if (blog.hasClass(target, 'footer-btn')) return
-      target = target.parentNode
-    }
-
-    var text = textArr[parseInt(Math.random() * textArr.length)]
-    var dom = createDOM(text)
-
-    document.body.appendChild(dom)
-    var w = parseInt(window.getComputedStyle(dom, null).getPropertyValue('width'))
-    var h = parseInt(window.getComputedStyle(dom, null).getPropertyValue('height'))
-
-    var sh = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0
-    dom.style.left = ev.pageX - w / 2 + 'px'
-    dom.style.top = ev.pageY - sh - h + 'px'
-    dom.style.opacity = 1
-
-    setTimeout(function () {
-      dom.style.transition = 'transform 500ms ease-out, opacity 500ms ease-out'
-      dom.style.webkitTransition = 'transform 500ms ease-out, opacity 500ms ease-out'
+  blog.initClickEffect = function (textArr) {
+    function createDOM(text) {
+      var dom = document.createElement('span')
+      dom.innerText = text
+      dom.style.left = 0
+      dom.style.top = 0
+      dom.style.position = 'fixed'
+      dom.style.fontSize = '12px'
+      dom.style.whiteSpace = 'nowrap'
+      dom.style.webkitUserSelect = 'none'
+      dom.style.userSelect = 'none'
       dom.style.opacity = 0
-      dom.style.transform = 'translateY(-26px)'
-      dom.style.webkitTransform = 'translateY(-26px)'
-    }, 20)
+      dom.style.transform = 'translateY(0)'
+      return dom
+    }
 
-    setTimeout(function () {
-      document.body.removeChild(dom)
-      dom = null
-    }, 520)
+    blog.addEvent(window, 'click', function (ev) {
+      var target = ev.target
+      while (target && target !== document.documentElement) {
+        if (target.tagName && target.tagName.toLowerCase() === 'a') return
+        if (blog.hasClass(target, 'footer-btn') || blog.hasClass(target, 'settings-panel')) return
+        target = target.parentNode
+      }
+
+      var text = textArr[parseInt(Math.random() * textArr.length, 10)]
+      var dom = createDOM(text)
+
+      document.body.appendChild(dom)
+      var width = parseInt(window.getComputedStyle(dom, null).getPropertyValue('width'), 10)
+      var height = parseInt(window.getComputedStyle(dom, null).getPropertyValue('height'), 10)
+      var scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0
+
+      dom.style.left = ev.pageX - width / 2 + 'px'
+      dom.style.top = ev.pageY - scrollTop - height + 'px'
+      dom.style.opacity = 1
+
+      window.setTimeout(function () {
+        dom.style.transition = 'transform 500ms ease-out, opacity 500ms ease-out'
+        dom.style.opacity = 0
+        dom.style.transform = 'translateY(-26px)'
+      }, 20)
+
+      window.setTimeout(function () {
+        if (dom.parentNode) dom.parentNode.removeChild(dom)
+      }, 520)
+    })
+  }
+
+  blog.initMath = function () {
+    if (typeof renderMathInElement !== 'function') return
+    each(document.querySelectorAll('.page-post .post'), function (container) {
+      if (container.getAttribute('data-math-rendered') === 'true') return
+      renderMathInElement(container, {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '\\[', right: '\\]', display: true },
+          { left: '$', right: '$', display: false },
+          { left: '\\(', right: '\\)', display: false }
+        ],
+        throwOnError: false,
+        strict: 'ignore',
+        ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      })
+      container.setAttribute('data-math-rendered', 'true')
+    })
+  }
+
+  blog.normalizeRichContent = function (container) {
+    if (!container) return
+
+    each(container.querySelectorAll('li > table'), function (table) {
+      var parent = table.parentNode
+      var rows = table.querySelectorAll('tr')
+      if (!parent || rows.length !== 1) return
+
+      var cells = rows[0].querySelectorAll('td,th')
+      if (cells.length < 2) return
+
+      var fragments = []
+      each(cells, function (cell) {
+        fragments.push(blog.trim(cell.textContent))
+      })
+
+      var merged = fragments.join('|')
+      if (merged.indexOf('$') === -1 && merged.indexOf('\\') === -1) return
+
+      parent.innerHTML = ''
+      parent.appendChild(document.createTextNode(merged))
+    })
+
+    each(container.querySelectorAll('p'), function (paragraph) {
+      var raw = paragraph.textContent || ''
+      if (raw.indexOf('\n') === -1 || raw.indexOf('|') === -1) return
+
+      var lines = raw
+        .split(/\r?\n/)
+        .map(function (line) {
+          return blog.trim(line)
+        })
+        .filter(function (line) {
+          return line !== ''
+        })
+
+      if (lines.length < 3) return
+      if (lines[0].charAt(0) !== '|' || lines[1].charAt(0) !== '|') return
+
+      var separator = lines[1].replace(/[|\s:-]/g, '')
+      if (separator !== '' && separator.replace(/—/g, '') !== '') return
+
+      var table = document.createElement('table')
+      var thead = document.createElement('thead')
+      var tbody = document.createElement('tbody')
+
+      function splitCells(line) {
+        var normalized = line.replace(/^\|/, '').replace(/\|$/, '')
+        return normalized.split('|').map(function (cell) {
+          return blog.trim(cell)
+        })
+      }
+
+      each(splitCells(lines[0]), function (cellText) {
+        var th = document.createElement('th')
+        th.appendChild(document.createTextNode(cellText))
+        if (!thead.firstChild) {
+          var tr = document.createElement('tr')
+          thead.appendChild(tr)
+        }
+        thead.firstChild.appendChild(th)
+      })
+
+      for (var i = 2; i < lines.length; i++) {
+        var tr = document.createElement('tr')
+        each(splitCells(lines[i]), function (cellText) {
+          var td = document.createElement('td')
+          td.appendChild(document.createTextNode(cellText))
+          tr.appendChild(td)
+        })
+        tbody.appendChild(tr)
+      }
+
+      table.appendChild(thead)
+      table.appendChild(tbody)
+      paragraph.parentNode.replaceChild(table, paragraph)
+    })
+  }
+
+  blog.addLoadEvent(function () {
+    if (!document.querySelector('.page-post')) return
+    each(document.querySelectorAll('.page-post .post'), function (container) {
+      blog.normalizeRichContent(container)
+    })
+    each(document.getElementsByTagName('table'), function (table) {
+      if (table.parentNode && blog.hasClass(table.parentNode, 'table-container')) return
+      var wrapper = document.createElement('div')
+      wrapper.setAttribute('class', 'table-container')
+      table.parentNode.insertBefore(wrapper, table)
+      wrapper.appendChild(table)
+    })
   })
-}
 
-// 新建DIV包裹TABLE
-blog.addLoadEvent(function () {
-  // 文章页生效
-  if (document.getElementsByClassName('page-post').length == 0) {
-    return
-  }
-  var tables = document.getElementsByTagName('table')
-  for (var i = 0; i < tables.length; i++) {
-    var table = tables[i]
-    var elem = document.createElement('div')
-    elem.setAttribute('class', 'table-container')
-    table.parentNode.insertBefore(elem, table)
-    elem.appendChild(table)
-  }
-})
+  blog.addLoadEvent(function () {
+    var toggle = document.querySelector('.settings-toggle')
+    var panel = document.querySelector('.settings-panel')
+    if (!toggle || !panel) return
 
-// 回到顶部
-blog.addLoadEvent(function () {
-  var el = document.querySelector('.footer-btn.to-top')
-  if (!el) return
-  function getScrollTop() {
-    if (document.documentElement && document.documentElement.scrollTop) {
-      return document.documentElement.scrollTop
-    } else if (document.body) {
-      return document.body.scrollTop
-    }
-  }
-  function ckeckToShow() {
-    if (getScrollTop() > 200) {
-      blog.addClass(el, 'show')
-    } else {
-      blog.removeClass(el, 'show')
-    }
-  }
-  blog.addEvent(window, 'scroll', ckeckToShow)
-  blog.addEvent(
-    el,
-    'click',
-    function (event) {
-      window.scrollTo(0, 0)
+    blog.removeClass(toggle, 'hide')
+    syncAppearancePanel()
+    setSettingsPanelOpen(false)
+    bindAppearanceOptions()
+
+    blog.addEvent(toggle, 'click', function (event) {
       event.stopPropagation()
-    },
-    true
-  )
-  ckeckToShow()
-})
+      setSettingsPanelOpen(blog.hasClass(panel, 'hide'))
+    })
 
-// 点击图片全屏预览
-blog.addLoadEvent(function () {
-  if (!document.querySelector('.page-post')) {
-    return
-  }
-  console.debug('init post img click event')
-  let imgMoveOrigin = null
-  let restoreLock = false
-  let imgArr = document.querySelectorAll('.page-post img')
+    blog.addEvent(panel, 'click', function (event) {
+      event.stopPropagation()
+    })
 
-  let css = [
-    '.img-move-bg {',
-    '  transition: opacity 300ms ease;',
-    '  position: fixed;',
-    '  left: 0;',
-    '  top: 0;',
-    '  right: 0;',
-    '  bottom: 0;',
-    '  opacity: 0;',
-    '  background-color: #000000;',
-    '  z-index: 100;',
-    '}',
-    '.img-move-item {',
-    '  transition: all 300ms ease;',
-    '  position: fixed;',
-    '  opacity: 0;',
-    '  cursor: pointer;',
-    '  z-index: 101;',
-    '}'
-  ].join('')
-  var styleDOM = document.createElement('style')
-  if (styleDOM.styleSheet) {
-    styleDOM.styleSheet.cssText = css
-  } else {
-    styleDOM.appendChild(document.createTextNode(css))
-  }
-  document.querySelector('head').appendChild(styleDOM)
+    blog.addEvent(document, 'click', function () {
+      setSettingsPanelOpen(false)
+    })
 
-  window.addEventListener('resize', toCenter)
+    blog.addEvent(document, 'keydown', function (event) {
+      if (event.key === 'Escape' || event.keyCode === 27) {
+        setSettingsPanelOpen(false)
+      }
+    })
 
-  for (let i = 0; i < imgArr.length; i++) {
-    imgArr[i].addEventListener('click', imgClickEvent, true)
-  }
-
-  function prevent(ev) {
-    ev.preventDefault()
-  }
-
-  function toCenter() {
-    if (!imgMoveOrigin) {
-      return
+    if (window.matchMedia) {
+      var media = window.matchMedia('(prefers-color-scheme: dark)')
+      var syncSystemTheme = function () {
+        if ((blog.settings || blog.appearance.readStored()).themeMode === 'system') {
+          blog.applyAppearance(blog.appearance.readStored())
+          syncAppearancePanel()
+        }
+      }
+      if (media.addEventListener) {
+        media.addEventListener('change', syncSystemTheme)
+      } else if (media.addListener) {
+        media.addListener(syncSystemTheme)
+      }
     }
-    let width = Math.min(imgMoveOrigin.naturalWidth, parseInt(document.documentElement.clientWidth * 0.9))
-    let height = (width * imgMoveOrigin.naturalHeight) / imgMoveOrigin.naturalWidth
-    if (window.innerHeight * 0.95 < height) {
-      height = Math.min(imgMoveOrigin.naturalHeight, parseInt(window.innerHeight * 0.95))
-      width = (height * imgMoveOrigin.naturalWidth) / imgMoveOrigin.naturalHeight
-    }
-
-    let img = document.querySelector('.img-move-item')
-    img.style.left = (document.documentElement.clientWidth - width) / 2 + 'px'
-    img.style.top = (window.innerHeight - height) / 2 + 'px'
-    img.style.width = width + 'px'
-    img.style.height = height + 'px'
-  }
-
-  function restore() {
-    if (restoreLock == true) {
-      return
-    }
-    restoreLock = true
-    let div = document.querySelector('.img-move-bg')
-    let img = document.querySelector('.img-move-item')
-
-    div.style.opacity = 0
-    img.style.opacity = 0
-    img.style.left = imgMoveOrigin.x + 'px'
-    img.style.top = imgMoveOrigin.y + 'px'
-    img.style.width = imgMoveOrigin.width + 'px'
-    img.style.height = imgMoveOrigin.height + 'px'
-
-    setTimeout(function () {
-      restoreLock = false
-      document.body.removeChild(div)
-      document.body.removeChild(img)
-      imgMoveOrigin = null
-    }, 300)
-  }
-
-  function imgClickEvent(event) {
-    imgMoveOrigin = event.target
-
-    let div = document.createElement('div')
-    div.className = 'img-move-bg'
-
-    let img = document.createElement('img')
-    img.className = 'img-move-item'
-    img.src = imgMoveOrigin.src
-    img.style.left = imgMoveOrigin.x + 'px'
-    img.style.top = imgMoveOrigin.y + 'px'
-    img.style.width = imgMoveOrigin.width + 'px'
-    img.style.height = imgMoveOrigin.height + 'px'
-
-    div.onclick = restore
-    div.onmousewheel = restore
-    div.ontouchmove = prevent
-
-    img.onclick = restore
-    img.onmousewheel = restore
-    img.ontouchmove = prevent
-    img.ondragstart = prevent
-
-    document.body.appendChild(div)
-    document.body.appendChild(img)
-
-    setTimeout(function () {
-      div.style.opacity = 0.5
-      img.style.opacity = 1
-      toCenter()
-    }, 0)
-  }
-})
-
-// 切换夜间模式
-blog.addLoadEvent(function () {
-  const $el = document.querySelector('.footer-btn.theme-toggler')
-  const $icon = $el.querySelector('.svg-icon')
-
-  blog.removeClass($el, 'hide')
-  if (blog.darkMode) {
-    blog.removeClass($icon, 'icon-theme-light')
-    blog.addClass($icon, 'icon-theme-dark')
-  }
-
-  function initDarkMode(flag) {
-    blog.removeClass($icon, 'icon-theme-light')
-    blog.removeClass($icon, 'icon-theme-dark')
-    if (flag === 'true') blog.addClass($icon, 'icon-theme-dark')
-    else blog.addClass($icon, 'icon-theme-light')
-
-    document.documentElement.setAttribute('transition', '')
-    setTimeout(function () {
-      document.documentElement.removeAttribute('transition')
-    }, 600)
-
-    blog.initDarkMode(flag)
-  }
-
-  blog.addEvent($el, 'click', function () {
-    const flag = blog.darkMode ? 'false' : 'true'
-    localStorage.darkMode = flag
-    initDarkMode(flag)
   })
 
-  if (window.matchMedia) {
-    window.matchMedia('(prefers-color-scheme: dark)').addListener(function (ev) {
-      const systemDark = ev.target.matches
-      if (systemDark !== blog.darkMode) {
-        localStorage.darkMode = '' // 清除用户设置
-        initDarkMode(systemDark ? 'true' : 'false')
-      }
-    })
-  }
-})
+  blog.addLoadEvent(function () {
+    var el = document.querySelector('.footer-btn.to-top')
+    if (!el) return
 
-// 标题定位
-blog.addLoadEvent(function () {
-  if (!document.querySelector('.page-post')) {
-    return
-  }
-  const list = document.querySelectorAll('.post h1, .post h2')
-  for (var i = 0; i < list.length; i++) {
-    blog.addEvent(list[i], 'click', function (event) {
-      const el = event.target
-      if (el.scrollIntoView) {
-        el.scrollIntoView({ block: 'start' })
+    function getScrollTop() {
+      if (document.documentElement && document.documentElement.scrollTop) {
+        return document.documentElement.scrollTop
       }
-      if (el.id && history.replaceState) {
-        history.replaceState({}, '', '#' + el.id)
+      return document.body ? document.body.scrollTop : 0
+    }
+
+    function toggleVisible() {
+      if (getScrollTop() > 240) {
+        blog.addClass(el, 'show')
+      } else {
+        blog.removeClass(el, 'show')
       }
+    }
+
+    blog.addEvent(window, 'scroll', toggleVisible)
+    blog.addEvent(
+      el,
+      'click',
+      function (event) {
+        window.scrollTo(0, 0)
+        if (event.stopPropagation) event.stopPropagation()
+      },
+      true
+    )
+    toggleVisible()
+  })
+
+  blog.addLoadEvent(function () {
+    if (!document.querySelector('.page-post')) return
+
+    var imgMoveOrigin = null
+    var restoreLock = false
+    var imgArr = document.querySelectorAll('.page-post img')
+    var css = [
+      '.img-move-bg {',
+      '  transition: opacity 300ms ease;',
+      '  position: fixed;',
+      '  left: 0;',
+      '  top: 0;',
+      '  right: 0;',
+      '  bottom: 0;',
+      '  opacity: 0;',
+      '  background-color: rgba(0, 0, 0, 0.88);',
+      '  z-index: 100;',
+      '}',
+      '.img-move-item {',
+      '  transition: all 300ms ease;',
+      '  position: fixed;',
+      '  opacity: 0;',
+      '  cursor: pointer;',
+      '  border-radius: 12px;',
+      '  z-index: 101;',
+      '}'
+    ].join('')
+    var styleDOM = document.createElement('style')
+    if (styleDOM.styleSheet) {
+      styleDOM.styleSheet.cssText = css
+    } else {
+      styleDOM.appendChild(document.createTextNode(css))
+    }
+    document.querySelector('head').appendChild(styleDOM)
+
+    function prevent(ev) {
+      ev.preventDefault()
+    }
+
+    function toCenter() {
+      if (!imgMoveOrigin) return
+
+      var width = Math.min(imgMoveOrigin.naturalWidth, parseInt(document.documentElement.clientWidth * 0.9, 10))
+      var height = (width * imgMoveOrigin.naturalHeight) / imgMoveOrigin.naturalWidth
+      if (window.innerHeight * 0.95 < height) {
+        height = Math.min(imgMoveOrigin.naturalHeight, parseInt(window.innerHeight * 0.95, 10))
+        width = (height * imgMoveOrigin.naturalWidth) / imgMoveOrigin.naturalHeight
+      }
+
+      var img = document.querySelector('.img-move-item')
+      if (!img) return
+      img.style.left = (document.documentElement.clientWidth - width) / 2 + 'px'
+      img.style.top = (window.innerHeight - height) / 2 + 'px'
+      img.style.width = width + 'px'
+      img.style.height = height + 'px'
+    }
+
+    function restore() {
+      if (restoreLock) return
+      restoreLock = true
+
+      var div = document.querySelector('.img-move-bg')
+      var img = document.querySelector('.img-move-item')
+      if (!div || !img || !imgMoveOrigin) {
+        restoreLock = false
+        return
+      }
+
+      div.style.opacity = 0
+      img.style.opacity = 0
+      img.style.left = imgMoveOrigin.x + 'px'
+      img.style.top = imgMoveOrigin.y + 'px'
+      img.style.width = imgMoveOrigin.width + 'px'
+      img.style.height = imgMoveOrigin.height + 'px'
+
+      window.setTimeout(function () {
+        restoreLock = false
+        if (div.parentNode) div.parentNode.removeChild(div)
+        if (img.parentNode) img.parentNode.removeChild(img)
+        imgMoveOrigin = null
+      }, 300)
+    }
+
+    function imgClickEvent(event) {
+      imgMoveOrigin = event.target
+
+      var div = document.createElement('div')
+      div.className = 'img-move-bg'
+
+      var img = document.createElement('img')
+      img.className = 'img-move-item'
+      img.src = imgMoveOrigin.src
+      img.style.left = imgMoveOrigin.x + 'px'
+      img.style.top = imgMoveOrigin.y + 'px'
+      img.style.width = imgMoveOrigin.width + 'px'
+      img.style.height = imgMoveOrigin.height + 'px'
+
+      div.onclick = restore
+      div.onmousewheel = restore
+      div.ontouchmove = prevent
+
+      img.onclick = restore
+      img.onmousewheel = restore
+      img.ontouchmove = prevent
+      img.ondragstart = prevent
+
+      document.body.appendChild(div)
+      document.body.appendChild(img)
+
+      window.setTimeout(function () {
+        div.style.opacity = 1
+        img.style.opacity = 1
+        toCenter()
+      }, 0)
+    }
+
+    blog.addEvent(window, 'resize', toCenter)
+    each(imgArr, function (img) {
+      blog.addEvent(img, 'click', imgClickEvent, true)
     })
-  }
-})
+  })
+
+  blog.addLoadEvent(function () {
+    if (!document.querySelector('.page-post')) return
+    each(document.querySelectorAll('.post h1, .post h2'), function (el) {
+      blog.addEvent(el, 'click', function () {
+        if (el.scrollIntoView) {
+          el.scrollIntoView({ block: 'start' })
+        }
+        if (el.id && history.replaceState) {
+          history.replaceState({}, '', '#' + el.id)
+        }
+      })
+    })
+  })
+})()

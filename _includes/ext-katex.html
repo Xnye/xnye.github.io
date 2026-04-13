@@ -1,0 +1,21 @@
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+  onload="document.dispatchEvent(new Event('katex-ready'))"
+></script>
+<script>
+  blog.addLoadEvent(function () {
+    function renderMath() {
+      if (typeof renderMathInElement !== 'function') return
+      blog.initMath()
+    }
+
+    if (window.renderMathInElement) {
+      renderMath()
+    } else {
+      document.addEventListener('katex-ready', renderMath, { once: true })
+    }
+  })
+</script>
