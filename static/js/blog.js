@@ -291,8 +291,27 @@
 
   blog.initMath = function () {
     if (typeof renderMathInElement !== 'function') return
+    
     each(document.querySelectorAll('.page-post .post'), function (container) {
       if (container.getAttribute('data-math-rendered') === 'true') return
+      
+      // 处理表格内的数学公式
+      each(container.querySelectorAll('table td, table th'), function (cell) {
+        if (cell.getAttribute('data-math-rendered') === 'true') return
+        renderMathInElement(cell, {
+          delimiters: [
+            { left: '$$', right: '$$', display: true },
+            { left: '\\[', right: '\\]', display: true },
+            { left: '$', right: '$', display: false },
+            { left: '\\(', right: '\\)', display: false }
+          ],
+          throwOnError: false,
+          strict: 'ignore'
+        })
+        cell.setAttribute('data-math-rendered', 'true')
+      })
+      
+      // 处理其他内容
       renderMathInElement(container, {
         delimiters: [
           { left: '$$', right: '$$', display: true },
@@ -302,7 +321,8 @@
         ],
         throwOnError: false,
         strict: 'ignore',
-        ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        ignoredClasses: ['nokatex']
       })
       container.setAttribute('data-math-rendered', 'true')
     })
@@ -363,7 +383,7 @@
 
       each(splitCells(lines[0]), function (cellText) {
         var th = document.createElement('th')
-        th.appendChild(document.createTextNode(cellText))
+        th.innerHTML = cellText
         if (!thead.firstChild) {
           var tr = document.createElement('tr')
           thead.appendChild(tr)
@@ -375,7 +395,7 @@
         var tr = document.createElement('tr')
         each(splitCells(lines[i]), function (cellText) {
           var td = document.createElement('td')
-          td.appendChild(document.createTextNode(cellText))
+          td.innerHTML = cellText
           tr.appendChild(td)
         })
         tbody.appendChild(tr)
