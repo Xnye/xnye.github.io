@@ -1,4 +1,4 @@
-{%- assign buildAt = site.time | date: "%Y%m%d%H%M%S" -%}
+﻿{%- assign buildAt = site.time | date: "%Y%m%d%H%M%S" -%}
 <head>
   <title>{{ page.title }}-{{ site.title }}</title>
   <meta charset="utf-8" />
@@ -39,7 +39,9 @@
           fontSize: 17,
           lineHeight: 1.72,
           accent: 'ink',
-          surface: 'pure'
+          surface: 'pure',
+          rainbow: 'off',
+          rainbowSpeed: 5
         },
         themeColors: {
           pure: { light: '#ffffff', dark: '#0d1117' },
@@ -53,6 +55,8 @@
           var lineHeight = parseFloat(settings && settings.lineHeight)
           var accent = settings && settings.accent
           var surface = settings && settings.surface
+          var rainbow = settings && settings.rainbow
+          var rainbowSpeed = parseInt(settings && settings.rainbowSpeed, 10)
 
           if (themeMode !== 'system' && themeMode !== 'light' && themeMode !== 'dark') {
             themeMode = defaults.themeMode
@@ -71,13 +75,22 @@
           if (['pure', 'paper', 'mist'].indexOf(surface) === -1) {
             surface = defaults.surface
           }
+          if (rainbow !== 'on' && rainbow !== 'off') {
+            rainbow = defaults.rainbow
+          }
+          if (isNaN(rainbowSpeed)) {
+            rainbowSpeed = defaults.rainbowSpeed
+          }
+          rainbowSpeed = Math.max(1, Math.min(20, rainbowSpeed))
 
           return {
             themeMode: themeMode,
             fontSize: fontSize,
             lineHeight: lineHeight,
             accent: accent,
-            surface: surface
+            surface: surface,
+            rainbow: rainbow,
+            rainbowSpeed: rainbowSpeed
           }
         },
         readStored: function () {
@@ -91,7 +104,9 @@
             fontSize: localStorage.getItem('fontSize'),
             lineHeight: localStorage.getItem('lineHeight'),
             accent: localStorage.getItem('accent'),
-            surface: localStorage.getItem('surface')
+            surface: localStorage.getItem('surface'),
+            rainbow: localStorage.getItem('rainbow'),
+            rainbowSpeed: localStorage.getItem('rainbowSpeed')
           })
         },
         isDark: function (themeMode) {
@@ -113,9 +128,11 @@
         root.setAttribute('data-theme-mode', normalized.themeMode)
         root.setAttribute('data-accent', normalized.accent)
         root.setAttribute('data-surface', normalized.surface)
+        root.setAttribute('data-rainbow', normalized.rainbow)
         root.style.setProperty('--ui-font-size', Math.max(14, normalized.fontSize - 1) + 'px')
         root.style.setProperty('--content-font-size', normalized.fontSize + 'px')
         root.style.setProperty('--content-line-height', normalized.lineHeight)
+        root.style.setProperty('--rainbow-speed', normalized.rainbowSpeed + 's')
 
         document.querySelector('meta[name=theme-color]').setAttribute('content', isDark ? surface.dark : surface.light)
       },
@@ -125,6 +142,8 @@
         localStorage.setItem('lineHeight', settings.lineHeight)
         localStorage.setItem('accent', settings.accent)
         localStorage.setItem('surface', settings.surface)
+        localStorage.setItem('rainbow', settings.rainbow)
+        localStorage.setItem('rainbowSpeed', settings.rainbowSpeed)
         localStorage.removeItem('darkMode')
       },
       updateAppearance: function (patch) {
@@ -134,7 +153,9 @@
           fontSize: current.fontSize,
           lineHeight: current.lineHeight,
           accent: current.accent,
-          surface: current.surface
+          surface: current.surface,
+          rainbow: current.rainbow,
+          rainbowSpeed: current.rainbowSpeed
         }
         for (var key in patch) {
           next[key] = patch[key]

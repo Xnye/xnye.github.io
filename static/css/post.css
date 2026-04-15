@@ -182,9 +182,9 @@
 
 .page-post th,
 .page-post td {
-  padding: 10px 14px;
+  padding: 4px 10px;
   text-align: left;
-  vertical-align: top;
+  vertical-align: middle;
 }
 
 .page-post table tr:nth-child(even) {
