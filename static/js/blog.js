@@ -32,19 +32,14 @@
     var fontSizeValue = document.querySelector('.font-size-value')
     var lineHeightSlider = document.querySelector('.line-height-slider')
     var lineHeightValue = document.querySelector('.line-height-value')
-    var rainbowSpeedSlider = document.querySelector('.rainbow-speed-slider')
-    var rainbowSpeedValue = document.querySelector('.rainbow-speed-value')
 
     if (fontSizeSlider) fontSizeSlider.value = settings.fontSize
     if (fontSizeValue) fontSizeValue.innerText = settings.fontSize + 'px'
     if (lineHeightSlider) lineHeightSlider.value = settings.lineHeight
     if (lineHeightValue) lineHeightValue.innerText = settings.lineHeight.toFixed(2)
-    if (rainbowSpeedSlider) rainbowSpeedSlider.value = settings.rainbowSpeed
-    if (rainbowSpeedValue) rainbowSpeedValue.innerText = settings.rainbowSpeed + 's'
     setActiveValue('.settings-options [data-value]', settings.themeMode)
     setActiveValue('.accent-swatches [data-value]', settings.accent)
     setActiveValue('.surface-swatches [data-value]', settings.surface)
-    setActiveValue('.rainbow-options [data-value]', settings.rainbow)
   }
 
   function setSettingsPanelOpen(open) {
@@ -94,23 +89,6 @@
       })
     })
 
-    each(document.querySelectorAll('.rainbow-options [data-value]'), function (item) {
-      blog.addEvent(item, 'click', function () {
-        applyAppearancePatch({
-          rainbow: item.getAttribute('data-value')
-        })
-      })
-    })
-
-
-    var rainbowSlider = document.querySelector('.rainbow-speed-slider')
-    if (rainbowSlider) {
-      blog.addEvent(rainbowSlider, 'input', function () {
-        applyAppearancePatch({
-          rainbowSpeed: parseInt(rainbowSlider.value, 10)
-        })
-      })
-    }
     var slider = document.querySelector('.font-size-slider')
     if (slider) {
       blog.addEvent(slider, 'input', function () {
