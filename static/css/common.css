@@ -45,7 +45,7 @@ html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", "Helvetica Neue", Arial, sans-serif;
-  overflow-y: overlay;
+  overflow-x: hidden;
 }
 
 html[data-accent='ink'] {
@@ -120,6 +120,7 @@ body {
   margin: 0 auto;
   font-size: var(--ui-font-size);
   background: transparent;
+  overflow-x: hidden;
 }
 
 body::before,
@@ -734,10 +735,12 @@ html[data-rainbow='on'] .page::before {
   .page {
     padding: 20px 18px 24px;
     border-radius: 12px;
+    max-width: 100%;
   }
 
   .footer {
     padding-bottom: 88px;
+    max-width: 100%;
   }
 
   .footer-btn,
