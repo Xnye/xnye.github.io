@@ -15,6 +15,7 @@ kramdown:
   auto_ids: true
   input: GFM
   syntax_highlighter: rouge
+  math_engine: mathjax
 exclude: ['CNAME', 'README.md', 'LICENSE', '_site', 'dist', 'Gemfile', 'Gemfile.lock', 'blog.sh']
 
 # 域名配置
