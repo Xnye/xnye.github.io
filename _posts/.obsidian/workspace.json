@@ -14,8 +14,8 @@
               "type": "markdown",
               "state": {
                 "file": "2026-04-16-xxds.md",
-                "mode": "source",
-                "source": false
+                "mode": "preview",
+                "source": true
               },
               "icon": "lucide-file",
               "title": "2026-04-16-xxds"
@@ -198,11 +198,11 @@
   },
   "active": "0a685b1ee9f4bcf8",
   "lastOpenFiles": [
-    "2026-04-16-wl5.md",
+    "2026-04-17-gs9.md",
     "2026-04-16-xxds.md",
+    "2026-04-16-wl5.md",
     "2026-04-15-wl4.md",
     "2025-12-30-eng.md",
-    "2026-04-12-gs9.md",
     "2025-12-13-pythongoods.md",
     "2025-04-26-init.md",
     "2025-08-04-vid.md",
