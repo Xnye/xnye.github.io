@@ -21,6 +21,17 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <meta name="theme-color" content="#f2f1ee" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#121316" media="(prefers-color-scheme: dark)" />
+    <!-- Start the CJK font fetch in parallel with the stylesheet. Without
+         this the browser would not ask for it until the CSS parsed and a
+         Chinese glyph was laid out. crossorigin is required for font fetches
+         even when the CORS header is permissive. -->
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href="https://gcore.jsdelivr.net/npm/@fontsource/noto-sans-sc@5.2.5/files/noto-sans-sc-chinese-simplified-400-normal.woff2"
+      crossorigin
+    />
 
     <script is:inline>
       (function () {

@@ -14,6 +14,24 @@
   font-display: swap;
 }
 
+/* Chinese: one 1.1 MB file covering 7,333 hanzi, served from a jsDelivr
+   mirror (gcore edge). Only weight 400 is shipped — the browser synthesises
+   the slightly heavier CJK used in headings, which reads fine at these sizes
+   and halves the payload versus shipping 400 + 500.
+   The <link rel="preload"> in Base.astro starts this fetch in parallel with
+   the stylesheet, since @font-face alone would not request it until the CSS
+   had been parsed and a CJK glyph was laid out. */
+@font-face {
+  font-family: 'NotoSC';
+  src: url('https://gcore.jsdelivr.net/npm/@fontsource/noto-sans-sc@5.2.5/files/noto-sans-sc-chinese-simplified-400-normal.woff2')
+    format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+3000-303F, U+3400-4DBF, U+4E00-9FFF, U+F900-FAFF,
+    U+FF00-FFEF;
+}
+
 /* ============================================================
    Tokens
    ============================================================ */
@@ -38,9 +56,13 @@
   --rail: 8.5rem;
   --nav-h: 3rem;
 
-  --font-display: 'Archivo', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-body: 'Archivo', system-ui, -apple-system, 'Segoe UI', 'PingFang SC',
-    'Microsoft YaHei', sans-serif;
+  /* Chinese falls through Archivo (no CJK glyphs) to NotoSC, which is a
+     single 1.1 MB file pulled from a jsDelivr mirror and preloaded from the
+     head. Only weight 400 is shipped; heavier CJK is synthesised. */
+  --font-display: 'Archivo', 'NotoSC', system-ui, -apple-system, 'Segoe UI',
+    sans-serif;
+  --font-body: 'Archivo', 'NotoSC', system-ui, -apple-system, 'Segoe UI',
+    sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 
   color-scheme: light;
