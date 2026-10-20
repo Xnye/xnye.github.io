@@ -8,4 +8,16 @@ export default defineConfig({
   },
   compressHTML: true,
   devToolbar: { enabled: false },
+  markdown: {
+    shikiConfig: {
+      // Emit both palettes as CSS variables and let the site's own theme
+      // switch choose one, instead of baking a single theme in.
+      themes: {
+        light: 'github-light',
+        dark: 'github-dark',
+      },
+      defaultColor: false,
+      wrap: true,
+    },
+  },
 });

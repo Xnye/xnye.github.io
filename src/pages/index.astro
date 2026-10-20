@@ -1,114 +1,52 @@
 ---
 import Base from '../layouts/Base.astro';
+import { getCollection } from 'astro:content';
 
-const sections = [
-  {
-    num: '01',
-    kind: 'About',
-    title: '这里是什么',
-    desc: '一个人的角落。不追热点，不接广告，不装统计代码。想到什么写什么，多数时候是自言自语。',
-  },
-  {
-    num: '02',
-    kind: 'Now',
-    title: '最近在做',
-    desc: '把这个站重做了一遍。之前是一套 Jekyll 博客主题，文章攒了十篇，后来觉得太吵，索性清空重来。',
-    note: 'Updated 2026',
-  },
-  {
-    num: '03',
-    kind: 'Notes',
-    title: '还没有文章',
-    desc: '想写的时候会往这儿放。现在这行字只是占位，不用当真。',
-  },
-];
+const posts = (await getCollection('posts', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+);
 
-const elsewhere = [
-  { label: 'GitHub', href: 'https://github.com/Xnye', external: true, desc: '在别处找我。' },
-  { label: 'Email', href: 'mailto:2010983680@qq.com', external: false, desc: '想说什么可以直接写信。' },
-];
+const fmt = (d: Date) =>
+  new Intl.DateTimeFormat('zh-CN', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  })
+    .format(d)
+    .replace(/\//g, '-');
 ---
 
-<Base title="0x000B10G" index="01" label="Index">
-  <section class="masthead">
-    <h1 class="masthead__title">随便写点东西的地方。</h1>
-    <p class="masthead__sub">
-      不打算做成正经博客，就是一个放东西的地方。
-    </p>
-    <p class="masthead__tagline serif">Pure [ANTi] Memory</p>
-    <div class="masthead__meta hud">
-      <span>Since 2025</span>
-      <span>No tracking</span>
-      <span>No cookies</span>
-    </div>
-  </section>
-
-  <div class="eyebrow">
-    <p class="hud hud--muted">
-      <span class="eyebrow__num">02</span><span class="eyebrow__slash">/</span>Sections
-    </p>
-    <p class="hud hud--faint eyebrow__right">Three entries</p>
-  </div>
-
-  <div class="rows">
-    {
-      sections.map((s) => (
-        <article class="row">
-          <div class="row__rail hud">
-            <span>{s.num}</span>
-            <span>{s.kind}</span>
-          </div>
-          <div class="row__body">
-            <h2 class="row__title">{s.title}</h2>
-            <p class="row__desc">{s.desc}</p>
-            {s.note && <p class="row__note hud">{s.note}</p>}
-          </div>
-        </article>
-      ))
-    }
-  </div>
-
-  <div class="eyebrow">
-    <p class="hud hud--muted">
-      <span class="eyebrow__num">03</span><span class="eyebrow__slash">/</span>Elsewhere
-    </p>
-    <p class="hud hud--faint eyebrow__right">Two links</p>
-  </div>
-
-  <div class="rows">
-    {
-      elsewhere.map((link, i) => (
-        <a
-          class="row"
-          href={link.href}
-          target={link.external ? '_blank' : undefined}
-          rel={link.external ? 'noopener noreferrer' : undefined}
-        >
-          <div class="row__rail hud">
-            <span>0{i + 1}</span>
-            <span>Link</span>
-          </div>
-          <div class="row__body">
-            <h2 class="row__title">
-              {link.label}
-              <svg
-                class="row__arrow"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                aria-hidden="true"
-              >
-                <path d="M5 12h14" />
-                <path d="m12 5 7 7-7 7" />
-              </svg>
-            </h2>
-            <p class="row__desc">{link.desc}</p>
-          </div>
-        </a>
-      ))
-    }
-  </div>
+<Base title="0x000B10G">
+  {
+    posts.length === 0 ? (
+      <p class="empty hud hud--faint">No posts yet</p>
+    ) : (
+      <div class="posts">
+        {posts.map((post) => (
+          <a class="post" href={`/posts/${post.id}/`}>
+            <p class="post__date hud">{fmt(post.data.date)}</p>
+            <div class="post__body">
+              <h2 class="post__title">
+                {post.data.title}
+                <svg
+                  class="post__arrow"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M5 12h14" />
+                  <path d="m12 5 7 7-7 7" />
+                </svg>
+              </h2>
+              {post.data.summary && <p class="post__summary">{post.data.summary}</p>}
+            </div>
+          </a>
+        ))}
+      </div>
+    )
+  }
 </Base>

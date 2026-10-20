@@ -4,17 +4,9 @@ import '../styles/global.css';
 export interface Props {
   title: string;
   description?: string;
-  index?: string;
-  label?: string;
 }
 
-const {
-  title,
-  description = 'Pure [ANTi] Memory',
-  index = '01',
-  label = 'Index',
-} = Astro.props;
-
+const { title, description = '0x000B10G' } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 ---
 
@@ -55,64 +47,23 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
           <span class="nav__mark" aria-hidden="true"></span>
           0x000B10G
         </a>
-        <div class="nav__right">
-          <a class="nav__item hud" href="https://github.com/Xnye" target="_blank" rel="noopener noreferrer">GitHub</a>
-          <a class="nav__item nav__item--ext hud" href="mailto:2010983680@qq.com">Email</a>
-          <button class="nav__toggle" type="button" id="theme-toggle" aria-label="Toggle theme">
-            <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
-              <circle cx="12" cy="12" r="4.2"></circle>
-              <path d="M12 2.5v2.6M12 18.9v2.6M4.2 4.2l1.9 1.9M17.9 17.9l1.9 1.9M2.5 12h2.6M18.9 12h2.6M4.2 19.8l1.9-1.9M17.9 6.1l1.9-1.9"></path>
-            </svg>
-            <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
-              <path d="M20.5 14.4A8.6 8.6 0 1 1 9.6 3.5a6.9 6.9 0 0 0 10.9 10.9Z"></path>
-            </svg>
-          </button>
-        </div>
+        <button class="nav__toggle" type="button" id="theme-toggle" aria-label="Toggle theme">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+            <circle cx="12" cy="12" r="4.2"></circle>
+            <path d="M12 2.5v2.6M12 18.9v2.6M4.2 4.2l1.9 1.9M17.9 17.9l1.9 1.9M2.5 12h2.6M18.9 12h2.6M4.2 19.8l1.9-1.9M17.9 6.1l1.9-1.9"></path>
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+            <path d="M20.5 14.4A8.6 8.6 0 1 1 9.6 3.5a6.9 6.9 0 0 0 10.9 10.9Z"></path>
+          </svg>
+        </button>
       </header>
-
-      <div class="eyebrow">
-        <p class="hud hud--muted">
-          <span class="eyebrow__num">{index}</span><span class="eyebrow__slash">/</span>{label}
-        </p>
-        <p class="hud hud--faint eyebrow__right">{description}</p>
-      </div>
 
       <main class="main">
         <slot />
       </main>
 
-      <footer class="foot">
-        <div class="foot__grid">
-          <div class="foot__cell foot__cell--wide">
-            <p class="foot__brand">0x000B10G</p>
-            <p>Pure [ANTi] Memory</p>
-          </div>
-          <nav class="foot__cell" aria-label="Elsewhere">
-            <p class="hud hud--faint">Elsewhere</p>
-            <ul class="foot__list">
-              <li><a href="https://github.com/Xnye" target="_blank" rel="noopener noreferrer">GitHub</a></li>
-              <li><a href="mailto:2010983680@qq.com">Email</a></li>
-            </ul>
-          </nav>
-          <nav class="foot__cell" aria-label="This site">
-            <p class="hud hud--faint">This site</p>
-            <ul class="foot__list">
-              <li><a href="/">Index</a></li>
-            </ul>
-          </nav>
-          <div class="foot__cell">
-            <p class="hud hud--faint">Built with</p>
-            <ul class="foot__list">
-              <li><span>Astro</span></li>
-              <li><span>Archivo</span></li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="foot__base">
-          <p class="hud hud--faint">© 2026 0x000B10G</p>
-          <p class="hud hud--faint">No tracking · No cookies</p>
-        </div>
+      <footer class="bottom">
+        <p class="hud hud--faint">© 2026 0x000B10G</p>
       </footer>
     </div>
 
