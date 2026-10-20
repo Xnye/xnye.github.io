@@ -41,7 +41,10 @@
   --invert-bg: #101014;
   --invert-fg: #f2f1ee;
 
-  --frame: 1240px;
+  /* Narrow enough that the frame hugs the content. A single post listing is
+     ~360px wide; a 1240px frame left it stranded in the middle of a mostly
+     empty field. */
+  --frame: 46rem;
   --rail: 8.5rem;
   --nav-h: 3rem;
 
