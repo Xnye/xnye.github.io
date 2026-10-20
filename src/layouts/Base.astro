@@ -21,16 +21,17 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <meta name="theme-color" content="#f2f1ee" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#121316" media="(prefers-color-scheme: dark)" />
-    <!-- Start the CJK font fetch in parallel with the stylesheet. Without
-         this the browser would not ask for it until the CSS parsed and a
-         Chinese glyph was laid out. crossorigin is required for font fetches
-         even when the CORS header is permissive. -->
+    <!-- Chinese webfont, sliced by unicode-range. The mirror's stylesheet
+         declares ~101 @font-face rules, one per slice; the browser fetches
+         only those covering characters on the page (~10 slices, ~310 KB)
+         rather than a single ~1.1 MB whole-font file.
+         Preconnect saves a TLS handshake to the font host, which differs from
+         the CSS host. -->
+    <link rel="preconnect" href="https://fonts.loli.net" />
+    <link rel="preconnect" href="https://gstatic.loli.net" crossorigin />
     <link
-      rel="preload"
-      as="font"
-      type="font/woff2"
-      href="https://gcore.jsdelivr.net/npm/@fontsource/noto-sans-sc@5.2.5/files/noto-sans-sc-chinese-simplified-400-normal.woff2"
-      crossorigin
+      rel="stylesheet"
+      href="https://fonts.loli.net/css2?family=Noto+Sans+SC:wght@400&display=swap"
     />
 
     <script is:inline>

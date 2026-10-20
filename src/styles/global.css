@@ -14,23 +14,12 @@
   font-display: swap;
 }
 
-/* Chinese: one 1.1 MB file covering 7,333 hanzi, served from a jsDelivr
-   mirror (gcore edge). Only weight 400 is shipped — the browser synthesises
-   the slightly heavier CJK used in headings, which reads fine at these sizes
-   and halves the payload versus shipping 400 + 500.
-   The <link rel="preload"> in Base.astro starts this fetch in parallel with
-   the stylesheet, since @font-face alone would not request it until the CSS
-   had been parsed and a CJK glyph was laid out. */
-@font-face {
-  font-family: 'NotoSC';
-  src: url('https://gcore.jsdelivr.net/npm/@fontsource/noto-sans-sc@5.2.5/files/noto-sans-sc-chinese-simplified-400-normal.woff2')
-    format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-  unicode-range: U+3000-303F, U+3400-4DBF, U+4E00-9FFF, U+F900-FAFF,
-    U+FF00-FFEF;
-}
+/* Chinese: the CSS delivered by the mirror declares 101 @font-face rules, each
+   with its own unicode-range and its own small woff2. The browser only
+   downloads the slices whose ranges cover characters actually on the page, so
+   this page costs ~10 slices (~310 KB) instead of a single ~1.1 MB file.
+   Loading it as a stylesheet (rather than hand-writing @font-face) is what
+   makes that slicing possible. */
 
 /* ============================================================
    Tokens
@@ -56,12 +45,13 @@
   --rail: 8.5rem;
   --nav-h: 3rem;
 
-  /* Chinese falls through Archivo (no CJK glyphs) to NotoSC, which is a
-     single 1.1 MB file pulled from a jsDelivr mirror and preloaded from the
-     head. Only weight 400 is shipped; heavier CJK is synthesised. */
-  --font-display: 'Archivo', 'NotoSC', system-ui, -apple-system, 'Segoe UI',
-    sans-serif;
-  --font-body: 'Archivo', 'NotoSC', system-ui, -apple-system, 'Segoe UI',
+  /* Archivo carries Latin; it has no CJK glyphs, so Chinese falls through to
+     "Noto Sans SC", which is supplied by the mirror stylesheet linked in
+     Base.astro. That sheet is sliced by unicode-range, so only the slices
+     containing characters on this page are downloaded. */
+  --font-display: 'Archivo', 'Noto Sans SC', system-ui, -apple-system,
+    'Segoe UI', sans-serif;
+  --font-body: 'Archivo', 'Noto Sans SC', system-ui, -apple-system, 'Segoe UI',
     sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 
