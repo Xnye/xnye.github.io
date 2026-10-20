@@ -1,54 +1,24 @@
 ---
 import Base from '../layouts/Base.astro';
-
-const links = [
-  { num: '01', name: 'Handshake', href: 'https://handshake.org/' },
-  { num: '02', name: 'GitHub', href: 'https://github.com/Xnye' },
-  { num: '03', name: 'Email', href: 'mailto:2010983680@qq.com' },
-];
 ---
 
-<Base title="0x000B10G" index="01" label="Index">
-  <section class="hero">
-    <h1 class="hero__name reveal">
-      0x000B10G<span class="slash"> /</span>
-    </h1>
+<Base title="0x000B10G" description="随便写点东西的地方。">
+  <h1 class="name">0x000B10G</h1>
 
-    <p class="hero__line reveal">
-      A quiet place to keep things I do not want to forget.
+  <p class="intro">随便写点东西的地方。</p>
+
+  <div class="text">
+    <p>
+      这里还没有什么内容。想写的时候会往这儿放。
     </p>
+  </div>
 
-    <div class="hero__meta hud reveal">
-      <span>Est. 2025</span>
-      <span>Somewhere on the internet</span>
-    </div>
+  <nav class="links" aria-label="链接">
+    <a href="https://github.com/Xnye" target="_blank" rel="noopener noreferrer">GitHub</a>
+    <a href="mailto:2010983680@qq.com">邮箱</a>
+  </nav>
 
-    <nav class="links reveal" aria-label="Elsewhere">
-      {
-        links.map((link) => (
-          <a
-            class="link"
-            href={link.href}
-            target={link.href.startsWith('mailto:') ? undefined : '_blank'}
-            rel={link.href.startsWith('mailto:') ? undefined : 'noopener noreferrer'}
-          >
-            <span class="link__label">
-              <span class="link__num hud">{link.num}</span>
-              <span class="link__name">{link.name}</span>
-            </span>
-            <svg
-              class="link__arrow"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.8"
-              aria-hidden="true"
-            >
-              <path d="M7 17 17 7M9 7h8v8" />
-            </svg>
-          </a>
-        ))
-      }
-    </nav>
-  </section>
+  <footer class="foot">
+    <span>© {new Date().getFullYear()} 0x000B10G</span>
+  </footer>
 </Base>
