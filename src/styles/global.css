@@ -284,7 +284,10 @@ html:not([data-theme='dark']) .icon-moon {
   color: var(--muted);
 }
 
-@media (min-width: 768px) {
+/* The rail layout needs vertical room as well as width. A landscape phone
+   is wide enough to match this by width alone, but with a 375px tall
+   viewport the two-column rhythm only cramps every row. */
+@media (min-width: 768px) and (min-height: 501px) {
   .post {
     grid-template-columns: var(--rail) 1fr;
     align-items: start;
@@ -443,6 +446,111 @@ html[data-theme='dark'] .prose pre span[style*='--shiki-dark'] {
   padding: 0.9rem clamp(1.25rem, 4vw, 2.5rem);
   border-top: 1px solid var(--line);
   color: var(--faint);
+}
+
+/* ============================================================
+   Short viewports — landscape phones and any squashed window.
+   Vertical space is the scarce axis here, so tighten it and let
+   the layout stay single-column regardless of width.
+   ============================================================ */
+
+@media (max-height: 500px) {
+  :root {
+    --nav-h: 2.5rem;
+  }
+
+  /* Move the rule into an inset shadow: a 1px border would otherwise eat
+     into the 40px bar and leave children a 39px hit area. */
+  .nav {
+    border-bottom-width: 0;
+    box-shadow: inset 0 -1px 0 0 var(--line);
+  }
+
+  .nav__brand {
+    font-size: 0.6875rem;
+  }
+
+  .nav__toggle {
+    width: 2.75rem;
+  }
+
+  .post {
+    grid-template-columns: 1fr;
+    padding-block: 0.9rem;
+  }
+
+  .post__title {
+    font-size: 1.0625rem;
+  }
+
+  .post__summary {
+    margin-top: 0.25rem;
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+
+  .empty {
+    padding-block: 2rem;
+  }
+
+  .article {
+    padding-block: 1.25rem 2rem;
+  }
+
+  .article__head {
+    padding-bottom: 0.9rem;
+  }
+
+  .article__title {
+    margin-top: 0.5rem;
+    font-size: clamp(1.25rem, 3.4vh, 1.75rem);
+    line-height: 1.25;
+  }
+
+  .prose {
+    margin-top: 1rem;
+    font-size: 1rem;
+    line-height: 1.7;
+  }
+
+  .prose h2 {
+    margin-top: 1.4em;
+    font-size: 1.1875rem;
+  }
+
+  .bottom {
+    padding-block: 0.6rem;
+  }
+}
+
+/* In a short landscape viewport the display scale would otherwise be driven
+   purely by width, which is now the larger axis. */
+@media (max-height: 500px) and (orientation: landscape) {
+  .article__title {
+    max-width: 30em;
+  }
+}
+
+/* ============================================================
+   Inline links in prose
+   Vertical padding on an inline box does not disturb the line box, so it
+   enlarges the touch target while the text rhythm stays put. Underline via
+   text-decoration so it hugs the glyphs instead of the padded box.
+   ============================================================ */
+
+.prose a {
+  border-bottom: 0;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+  text-decoration-color: var(--line-strong);
+  padding-block: 0.72em;
+  padding-inline: 0.3em;
+  margin-inline: -0.3em;
+}
+
+.prose a:hover {
+  text-decoration-color: var(--ink);
 }
 
 @media (prefers-reduced-motion: reduce) {
