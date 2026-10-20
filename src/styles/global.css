@@ -35,15 +35,15 @@
   --muted: rgb(16 16 20 / 0.62);
   --faint: rgb(16 16 20 / 0.42);
 
-  /* Three weights of rule, measured against the page background:
-       --line        0.16 alpha  1.41:1  interior hairlines between blocks
-       --line-strong 0.42 alpha  2.98:1  dividers that must register
-       --line-frame  0.50 alpha  3.48:1  the outer frame only
-     The frame needs to clear ~3:1 or it disappears on scaled displays; the
-     interior rules do not, because they sit between adjacent surfaces. */
+  /* Three weights of rule.
+     A 1px border at a fractional device pixel ratio (Windows 125%, the
+     common case) is split across two device pixels by antialiasing, so each
+     half renders at roughly half strength. Measured: at DPR 1.25 the frame
+     collapsed to luminance 156/184 instead of 128, i.e. visibly washed out.
+     A fully opaque frame keeps both halves dark enough to read. */
   --line: rgb(16 16 20 / 0.16);
   --line-strong: rgb(16 16 20 / 0.42);
-  --line-frame: rgb(16 16 20 / 0.5);
+  --line-frame: #101014;
 
   --invert-bg: #101014;
   --invert-fg: #f2f1ee;
@@ -80,7 +80,7 @@ html[data-theme='dark'] {
 
   --line: rgb(242 241 238 / 0.15);
   --line-strong: rgb(242 241 238 / 0.4);
-  --line-frame: rgb(242 241 238 / 0.5);
+  --line-frame: #f2f1ee;
 
   --invert-bg: #f2f1ee;
   --invert-fg: #0b0b0c;
