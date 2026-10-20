@@ -208,12 +208,21 @@ svg {
   background: var(--ink);
 }
 
+/* The toggle sits inside the frame with the same inline padding the brand
+   has, and carries no divider of its own — the frame's right border is the
+   only vertical rule in this corner. Previously the button butted against
+   that border and drew a second line 48px from it. */
 .nav__toggle {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 3rem;
-  border-left: 1px solid var(--line);
+  /* 2.75rem box, 14px glyph: the hit area stays above the 40px minimum even
+     in the 40px-tall landscape nav, while the icon itself stays small. */
+  width: 2.75rem;
+  height: 2.75rem;
+  margin-inline-end: clamp(0.6rem, 2.5vw, 1.5rem);
+  border: 0;
+  border-radius: 2px;
   background: none;
   color: var(--muted);
   cursor: pointer;
@@ -496,8 +505,12 @@ html[data-theme='dark'] .prose pre span[style*='--shiki-dark'] {
     font-size: 0.6875rem;
   }
 
+  /* In a 40px nav the button cannot be 44px tall, so it fills the bar
+     instead: height comes from the nav, width stays tappable. */
   .nav__toggle {
     width: 2.75rem;
+    height: 100%;
+    margin-inline-end: 0.5rem;
   }
 
   .post {
