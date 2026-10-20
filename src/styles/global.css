@@ -14,12 +14,10 @@
   font-display: swap;
 }
 
-/* Chinese: the CSS delivered by the mirror declares 101 @font-face rules, each
-   with its own unicode-range and its own small woff2. The browser only
-   downloads the slices whose ranges cover characters actually on the page, so
-   this page costs ~10 slices (~310 KB) instead of a single ~1.1 MB file.
-   Loading it as a stylesheet (rather than hand-writing @font-face) is what
-   makes that slicing possible. */
+/* Chinese: the mirror stylesheet declares ~101 @font-face rules, each with
+   its own unicode-range and small woff2. The browser downloads only the
+   slices covering characters actually on the page (~10 slices, ~310 KB)
+   instead of a single ~1.1 MB whole-font file. */
 
 /* ============================================================
    Tokens
@@ -35,30 +33,19 @@
   --muted: rgb(16 16 20 / 0.62);
   --faint: rgb(16 16 20 / 0.42);
 
-  /* Three weights of rule.
-     A 1px border at a fractional device pixel ratio (Windows 125%, the
-     common case) is split across two device pixels by antialiasing, so each
-     half renders at roughly half strength. Measured: at DPR 1.25 the frame
-     collapsed to luminance 156/184 instead of 128, i.e. visibly washed out.
-     A fully opaque frame keeps both halves dark enough to read. */
+  /* Rules are drawn as full 1px device pixels. A translucent hairline gets
+     split across two device pixels whenever the container edge lands on a
+     fractional pixel, which happens for most window widths at DPR 1.25 and
+     makes the line look washed out at some sizes and crisp at others. */
   --line: rgb(16 16 20 / 0.16);
-  --line-strong: rgb(16 16 20 / 0.42);
-  --line-frame: #101014;
+  --rule: #101014;
 
   --invert-bg: #101014;
   --invert-fg: #f2f1ee;
 
-  /* Narrow enough that the frame hugs the content. A single post listing is
-     ~360px wide; a 1240px frame left it stranded in the middle of a mostly
-     empty field. */
   --frame: 46rem;
-  --rail: 8.5rem;
   --nav-h: 3rem;
 
-  /* Archivo carries Latin; it has no CJK glyphs, so Chinese falls through to
-     "Noto Sans SC", which is supplied by the mirror stylesheet linked in
-     Base.astro. That sheet is sliced by unicode-range, so only the slices
-     containing characters on this page are downloaded. */
   --font-display: 'Archivo', 'Noto Sans SC', system-ui, -apple-system,
     'Segoe UI', sans-serif;
   --font-body: 'Archivo', 'Noto Sans SC', system-ui, -apple-system, 'Segoe UI',
@@ -79,8 +66,7 @@ html[data-theme='dark'] {
   --faint: rgb(242 241 238 / 0.38);
 
   --line: rgb(242 241 238 / 0.15);
-  --line-strong: rgb(242 241 238 / 0.4);
-  --line-frame: #f2f1ee;
+  --rule: #f2f1ee;
 
   --invert-bg: #f2f1ee;
   --invert-fg: #0b0b0c;
@@ -98,7 +84,6 @@ html[data-theme='dark'] {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  border: 0 solid var(--line);
 }
 
 html {
@@ -122,7 +107,7 @@ body {
 }
 
 :focus-visible {
-  outline: 2px solid var(--line-strong);
+  outline: 2px solid var(--rule);
   outline-offset: 2px;
 }
 
@@ -136,7 +121,6 @@ svg {
   flex: none;
 }
 
-/* mono hud label — the micro-type of the system */
 .hud {
   font-family: var(--font-mono);
   font-size: 0.6875rem;
@@ -146,70 +130,34 @@ svg {
   line-height: 1;
 }
 
-.hud--muted {
-  color: var(--muted);
-}
-
 .hud--faint {
   color: var(--faint);
 }
 
 /* ============================================================
-   Shell — the outer frame.
+   Nav — full bleed, no vertical rules
 
-   The vertical rules are drawn with an inset box-shadow, not border-inline.
-   Centring a 736px column in an odd viewport width puts the edges on a
-   fractional device pixel (at DPR 1.25 a 1090px viewport lands the left
-   edge at device px 221.25). A 1px border there is split by antialiasing
-   into two half-strength columns — measured 73 + 129 instead of a solid
-   17 — so the line reads as washed out at some window widths and crisp at
-   others. A shadow is composited the same way, but being opaque and exactly
-   1px it stays legible either way, and it does not consume layout width
-   the way a border does.
-   ============================================================ */
-
-.shell {
-  width: 100%;
-  max-width: var(--frame);
-  margin-inline: auto;
-  /* 1px rules cannot survive fractional device pixels: centring a 736px
-     column in an odd viewport width puts the edge on something like device
-     px 221.25 at DPR 1.25, and antialiasing splits the line into two
-     half-strength columns (measured 73 + 129 instead of a solid 17), so the
-     line looks washed out at some window widths and crisp at others.
-     Drawing it 1.5px wide guarantees at least one fully covered device
-     pixel at every phase, which removes the width-dependent variation. */
-  box-shadow: inset 1.5px 0 0 var(--line-frame), inset -1.5px 0 0 var(--line-frame);
-  padding-inline: 1.5px;
-  min-height: 100vh;
-  min-height: 100dvh;
-  display: flex;
-  flex-direction: column;
-  background: var(--bg);
-}
-
-/* ============================================================
-   Nav
+   The previous build wrapped everything in one bordered column and let the
+   nav sit on top of its own rails with a translucent, blurred background.
+   That blur smeared the rail underneath and left the top 48px of the frame
+   a different weight from the rest. The reference avoids this by keeping
+   the bar full width and putting the rails inside the sections below.
    ============================================================ */
 
 .nav {
-  position: sticky;
-  top: 0;
-  z-index: 40;
   display: flex;
   align-items: stretch;
   justify-content: space-between;
   height: var(--nav-h);
-  border-bottom: 1px solid var(--line);
-  background: color-mix(in srgb, var(--bg) 90%, transparent);
-  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--rule);
+  background: var(--bg);
 }
 
 .nav__brand {
   display: flex;
   align-items: center;
-  gap: 0.55rem;
-  padding-inline: clamp(1.25rem, 4vw, 2.5rem);
+  gap: 0.5rem;
+  padding-inline: clamp(1rem, 4vw, 2.5rem);
   font-family: var(--font-mono);
   font-size: 0.75rem;
   font-weight: 700;
@@ -218,49 +166,47 @@ svg {
 }
 
 .nav__mark {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   background: var(--ink);
 }
 
-/* The toggle sits inside the frame with the same inline padding the brand
-   has, and carries no divider of its own — the frame's right border is the
-   only vertical rule in this corner. Previously the button butted against
-   that border and drew a second line 48px from it. */
-.nav__toggle {
+.nav__cell {
   display: flex;
   align-items: center;
   justify-content: center;
-  /* 2.75rem box, 14px glyph: the hit area stays above the 40px minimum even
-     in the 40px-tall landscape nav, while the icon itself stays small. */
-  width: 2.75rem;
-  height: 2.75rem;
-  margin-inline-end: clamp(0.6rem, 2.5vw, 1.5rem);
-  border: 0;
-  border-radius: 2px;
+  width: 3rem;
+  border-left: 1px solid var(--rule);
   background: none;
   color: var(--muted);
   cursor: pointer;
   transition: background-color 120ms ease, color 120ms ease;
 }
 
-.nav__toggle:hover {
+.nav__cell:hover {
   background: var(--invert-bg);
   color: var(--invert-fg);
 }
 
-.nav__toggle svg {
-  width: 15px;
-  height: 15px;
+.nav__cell svg {
+  width: 14px;
+  height: 14px;
 }
 
 html[data-theme='dark'] .icon-sun,
 html:not([data-theme='dark']) .icon-moon {
   display: none;
 }
-
 /* ============================================================
-   Main
+   Rail — the bordered column, applied per section
+
+   Each section owns its own left and right rule, so nothing ever composites
+   over a rule and the whole height is guaranteed identical. The rules use
+   the 1.5px trick: a 1px line lands on a fractional device pixel whenever
+   the centred column leftover space is odd, and antialiasing then splits
+   it into two half-strength columns (measured 73 + 129 instead of a solid
+   17). At 1.5px there is always one fully covered device pixel, so every
+   width renders the same weight.
    ============================================================ */
 
 .main {
@@ -269,23 +215,52 @@ html:not([data-theme='dark']) .icon-moon {
   flex-direction: column;
 }
 
+.rail {
+  width: 100%;
+  max-width: var(--frame);
+  margin-inline: auto;
+  /* Two CSS px, not one. At a fractional device ratio a 1px rule is split by
+     antialiasing into two columns whose ratio depends on where the centred
+     column happens to land, so one side reads grey and the other black at the
+     same time. At 2px at least two device columns are fully covered at every
+     phase, which makes both edges look the same weight. */
+  box-shadow: inset 2px 0 0 var(--rule), inset -2px 0 0 var(--rule);
+  padding-inline: 2px;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.foot {
+  margin-top: auto;
+}
+
+.rail--foot {
+  flex: none;
+  border-top: 1px solid var(--rule);
+  padding: 0.85rem clamp(1rem, 4vw, 2.5rem);
+}
+
 /* ============================================================
-   Post list — the whole point of the page
+   Post list
    ============================================================ */
 
 .posts {
   display: flex;
   flex-direction: column;
-  gap: 1px;
-  background: var(--line);
 }
 
 .post {
   display: grid;
-  gap: 0.5rem 2rem;
-  padding: clamp(1.5rem, 3.2vw, 2.1rem) clamp(1.25rem, 4vw, 2.5rem);
-  background: var(--bg);
+  gap: 0.35rem 1.75rem;
+  padding: 1.6rem clamp(1rem, 4vw, 2.5rem);
+  border-bottom: 1px solid var(--line);
   transition: background-color 140ms ease;
+}
+
+.post:last-child {
+  border-bottom: 0;
 }
 
 .post:hover {
@@ -294,7 +269,7 @@ html:not([data-theme='dark']) .icon-moon {
 
 .post__date {
   color: var(--faint);
-  padding-top: 0.15rem;
+  padding-top: 0.2rem;
 }
 
 .post__body {
@@ -304,42 +279,38 @@ html:not([data-theme='dark']) .icon-moon {
 .post__title {
   display: flex;
   align-items: baseline;
-  gap: 0.6rem;
+  gap: 0.55rem;
   font-family: var(--font-display);
-  font-size: clamp(1.1875rem, 2.1vw, 1.4375rem);
+  font-size: 1.1875rem;
   font-weight: 500;
   line-height: 1.3;
-  letter-spacing: -0.022em;
+  letter-spacing: -0.02em;
   color: var(--ink-strong);
 }
 
 .post__arrow {
-  width: 0.95rem;
-  height: 0.95rem;
+  width: 0.85rem;
+  height: 0.85rem;
   color: var(--faint);
-  transform: translateY(0.1em);
   transition: transform 160ms ease, color 160ms ease;
 }
 
 .post:hover .post__arrow {
   color: var(--ink);
-  transform: translate(3px, 0.1em);
+  transform: translateX(3px);
 }
 
 .post__summary {
   max-width: 40em;
-  margin-top: 0.45rem;
+  margin-top: 0.4rem;
   font-size: 0.875rem;
-  line-height: 1.7;
+  line-height: 1.65;
   color: var(--muted);
 }
 
-/* The rail layout needs vertical room as well as width. A landscape phone
-   is wide enough to match this by width alone, but with a 375px tall
-   viewport the two-column rhythm only cramps every row. */
-@media (min-width: 768px) and (min-height: 501px) {
+@media (min-width: 40rem) and (min-height: 31.25rem) {
   .post {
-    grid-template-columns: var(--rail) 1fr;
+    grid-template-columns: 7.5rem 1fr;
     align-items: start;
   }
 }
@@ -349,7 +320,7 @@ html:not([data-theme='dark']) .icon-moon {
    ============================================================ */
 
 .empty {
-  padding: clamp(3rem, 9vw, 5rem) clamp(1.25rem, 4vw, 2.5rem);
+  padding: 3rem clamp(1rem, 4vw, 2.5rem);
   color: var(--faint);
 }
 
@@ -358,13 +329,12 @@ html:not([data-theme='dark']) .icon-moon {
    ============================================================ */
 
 .article {
-  padding: clamp(2.5rem, 6vw, 4rem) clamp(1.25rem, 4vw, 2.5rem)
-    clamp(3rem, 8vw, 5rem);
+  padding: 2.5rem clamp(1rem, 4vw, 2.5rem) 3rem;
 }
 
 .article__head {
   max-width: 42em;
-  padding-bottom: clamp(1.5rem, 3.5vw, 2.2rem);
+  padding-bottom: 1.4rem;
   border-bottom: 1px solid var(--line);
 }
 
@@ -373,12 +343,12 @@ html:not([data-theme='dark']) .icon-moon {
 }
 
 .article__title {
-  margin-top: 0.8rem;
+  margin-top: 0.6rem;
   font-family: var(--font-display);
-  font-size: clamp(1.5rem, 3.4vw, 2.25rem);
+  font-size: clamp(1.5rem, 3.2vw, 2.1rem);
   font-weight: 500;
-  line-height: 1.22;
-  letter-spacing: -0.028em;
+  line-height: 1.24;
+  letter-spacing: -0.026em;
   color: var(--ink-strong);
   text-wrap: balance;
   word-break: keep-all;
@@ -387,7 +357,7 @@ html:not([data-theme='dark']) .icon-moon {
 
 .prose {
   max-width: 38em;
-  margin-top: clamp(1.6rem, 3.5vw, 2.2rem);
+  margin-top: 1.5rem;
   font-size: 1rem;
   line-height: 1.78;
 }
@@ -408,7 +378,7 @@ html:not([data-theme='dark']) .icon-moon {
 
 .prose h3 {
   margin-top: 1.8em;
-  font-size: 1.0625rem;
+  font-size: 1rem;
   font-weight: 600;
 }
 
@@ -417,12 +387,20 @@ html:not([data-theme='dark']) .icon-moon {
   color: var(--ink-strong);
 }
 
+/* Inline links: px padding keeps the hit area at 40px+ even when the type
+   scale drops, and text-decoration keeps the underline on the glyphs. */
 .prose a {
-  border-bottom: 1px solid var(--line-strong);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+  text-decoration-color: var(--muted);
+  padding-block: 14px;
+  padding-inline: 0.5em;
+  margin-inline: -0.5em;
 }
 
 .prose a:hover {
-  border-color: var(--ink);
+  text-decoration-color: var(--ink);
 }
 
 .prose ul,
@@ -435,8 +413,8 @@ html:not([data-theme='dark']) .icon-moon {
 }
 
 .prose blockquote {
-  padding-left: 1.1rem;
-  border-left: 1px solid var(--line-strong);
+  padding-left: 1rem;
+  border-left: 1px solid var(--line);
   color: var(--muted);
 }
 
@@ -444,11 +422,15 @@ html:not([data-theme='dark']) .icon-moon {
   font-family: var(--font-mono);
   font-size: 0.875em;
   padding: 0.1em 0.35em;
-  background: color-mix(in srgb, var(--ink) 6%, transparent);
+  background: rgb(16 16 20 / 0.06);
+}
+
+html[data-theme='dark'] .prose code {
+  background: rgb(242 241 238 / 0.08);
 }
 
 .prose pre {
-  padding: 1rem 1.15rem;
+  padding: 1rem 1.1rem;
   overflow-x: auto;
   background: var(--bg-raised);
   border: 1px solid var(--line);
@@ -462,14 +444,14 @@ html:not([data-theme='dark']) .icon-moon {
   font-size: 1em;
   color: var(--ink);
 }
-
-/* Shiki writes --shiki-light / --shiki-dark on every token; pick by theme. */
-.prose pre span[style*='--shiki-light'] {
-  color: var(--shiki-light);
+/* Shiki writes both palettes as custom properties on each token when
+   defaultColor is off; pick one per theme without an attribute selector. */
+.prose pre span {
+  color: var(--shiki-light, inherit);
 }
 
-html[data-theme='dark'] .prose pre span[style*='--shiki-dark'] {
-  color: var(--shiki-dark);
+html[data-theme='dark'] .prose pre span {
+  color: var(--shiki-dark, inherit);
 }
 
 .prose img {
@@ -484,53 +466,35 @@ html[data-theme='dark'] .prose pre span[style*='--shiki-dark'] {
 }
 
 /* ============================================================
-   Bottom bar
+   Short viewports — landscape phones
    ============================================================ */
 
-.bottom {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem 1rem;
-  padding: 0.9rem clamp(1.25rem, 4vw, 2.5rem);
-  border-top: 1px solid var(--line);
-  color: var(--faint);
-}
-
-/* ============================================================
-   Short viewports — landscape phones and any squashed window.
-   Vertical space is the scarce axis here, so tighten it and let
-   the layout stay single-column regardless of width.
-   ============================================================ */
-
-@media (max-height: 500px) {
+@media (max-height: 31.25rem) {
   :root {
     --nav-h: 2.5rem;
   }
 
-  /* Move the rule into an inset shadow: a 1px border would otherwise eat
-     into the 40px bar and leave children a 39px hit area. */
+  /* At 40px the bar itself is the hit area. The bottom rule moves into an
+     inset shadow so the 1px border does not eat into the children, and the
+     children stretch to the full bar height. */
   .nav {
     border-bottom-width: 0;
-    box-shadow: inset 0 -1px 0 0 var(--line);
+    box-shadow: inset 0 -1px 0 var(--rule);
   }
 
   .nav__brand {
-    font-size: 0.6875rem;
+    padding-block: 0;
+    height: 100%;
   }
 
-  /* In a 40px nav the button cannot be 44px tall, so it fills the bar
-     instead: height comes from the nav, width stays tappable. */
-  .nav__toggle {
+  .nav__cell {
     width: 2.75rem;
     height: 100%;
-    margin-inline-end: 0.5rem;
   }
 
   .post {
     grid-template-columns: 1fr;
-    padding-block: 0.9rem;
+    padding-block: 0.85rem;
   }
 
   .post__title {
@@ -538,13 +502,8 @@ html[data-theme='dark'] .prose pre span[style*='--shiki-dark'] {
   }
 
   .post__summary {
-    margin-top: 0.25rem;
     font-size: 0.8125rem;
     line-height: 1.5;
-  }
-
-  .empty {
-    padding-block: 2rem;
   }
 
   .article {
@@ -552,12 +511,12 @@ html[data-theme='dark'] .prose pre span[style*='--shiki-dark'] {
   }
 
   .article__head {
-    padding-bottom: 0.9rem;
+    padding-bottom: 0.85rem;
   }
 
   .article__title {
-    margin-top: 0.5rem;
-    font-size: clamp(1.125rem, 3.1vh, 1.5rem);
+    margin-top: 0.4rem;
+    font-size: clamp(1.125rem, 3vh, 1.5rem);
     line-height: 1.25;
   }
 
@@ -572,41 +531,9 @@ html[data-theme='dark'] .prose pre span[style*='--shiki-dark'] {
     font-size: 1.125rem;
   }
 
-  .bottom {
+  .rail--foot {
     padding-block: 0.6rem;
   }
-}
-
-/* In a short landscape viewport the display scale would otherwise be driven
-   purely by width, which is now the larger axis. */
-@media (max-height: 500px) and (orientation: landscape) {
-  .article__title {
-    max-width: 30em;
-  }
-}
-
-/* ============================================================
-   Inline links in prose
-   Vertical padding on an inline box does not disturb the line box, so it
-   enlarges the touch target while the text rhythm stays put. Underline via
-   text-decoration so it hugs the glyphs instead of the padded box.
-   Padding is in px, not em: the hit area must not shrink when the type
-   scale shrinks, or the landscape rules push it back under 40px.
-   ============================================================ */
-
-.prose a {
-  border-bottom: 0;
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.22em;
-  text-decoration-color: var(--line-strong);
-  padding-block: 14px;
-  padding-inline: 0.5em;
-  margin-inline: -0.5em;
-}
-
-.prose a:hover {
-  text-decoration-color: var(--ink);
 }
 
 @media (prefers-reduced-motion: reduce) {

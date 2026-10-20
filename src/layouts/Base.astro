@@ -21,12 +21,9 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <meta name="theme-color" content="#f2f1ee" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#121316" media="(prefers-color-scheme: dark)" />
-    <!-- Chinese webfont, sliced by unicode-range. The mirror's stylesheet
-         declares ~101 @font-face rules, one per slice; the browser fetches
-         only those covering characters on the page (~10 slices, ~310 KB)
-         rather than a single ~1.1 MB whole-font file.
-         Preconnect saves a TLS handshake to the font host, which differs from
-         the CSS host. -->
+
+    <!-- Chinese webfont, sliced by unicode-range; only slices covering
+         characters on the page are fetched. -->
     <link rel="preconnect" href="https://fonts.loli.net" />
     <link rel="preconnect" href="https://gstatic.loli.net" crossorigin />
     <link
@@ -53,31 +50,35 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
   </head>
 
   <body>
-    <div class="shell">
-      <header class="nav">
-        <a class="nav__brand" href="/">
-          <span class="nav__mark" aria-hidden="true"></span>
-          0x000B10G
-        </a>
-        <button class="nav__toggle" type="button" id="theme-toggle" aria-label="Toggle theme">
-          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
-            <circle cx="12" cy="12" r="4.2"></circle>
-            <path d="M12 2.5v2.6M12 18.9v2.6M4.2 4.2l1.9 1.9M17.9 17.9l1.9 1.9M2.5 12h2.6M18.9 12h2.6M4.2 19.8l1.9-1.9M17.9 6.1l1.9-1.9"></path>
-          </svg>
-          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
-            <path d="M20.5 14.4A8.6 8.6 0 1 1 9.6 3.5a6.9 6.9 0 0 0 10.9 10.9Z"></path>
-          </svg>
-        </button>
-      </header>
+    <!-- Full-bleed bar, exactly as the reference does it: the vertical rails
+         live inside the sections below, never under this bar. -->
+    <header class="nav">
+      <a class="nav__brand" href="/">
+        <span class="nav__mark" aria-hidden="true"></span>
+        0x000B10G
+      </a>
+      <button class="nav__cell" type="button" id="theme-toggle" aria-label="Toggle theme">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+          <circle cx="12" cy="12" r="4.2"></circle>
+          <path d="M12 2.5v2.6M12 18.9v2.6M4.2 4.2l1.9 1.9M17.9 17.9l1.9 1.9M2.5 12h2.6M18.9 12h2.6M4.2 19.8l1.9-1.9M17.9 6.1l1.9-1.9"></path>
+        </svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+          <path d="M20.5 14.4A8.6 8.6 0 1 1 9.6 3.5a6.9 6.9 0 0 0 10.9 10.9Z"></path>
+        </svg>
+      </button>
+    </header>
 
-      <main class="main">
+    <main class="main">
+      <div class="rail">
         <slot />
-      </main>
+      </div>
+    </main>
 
-      <footer class="bottom">
+    <footer class="foot">
+      <div class="rail rail--foot">
         <p class="hud hud--faint">© 2026 0x000B10G</p>
-      </footer>
-    </div>
+      </div>
+    </footer>
 
     <script is:inline>
       (function () {
