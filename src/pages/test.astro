@@ -1,0 +1,166 @@
+---
+import Base from '../layouts/Base.astro';
+import '../styles/test.css';
+---
+
+<Base title="Test — 0x000B10G" index="02" label="Test">
+  <section class="t">
+    <header class="t__head">
+      <p class="hud hud--faint">Design check</p>
+      <h1 class="t__title">Test page</h1>
+      <p class="t__sub serif">
+        Every primitive this site uses, on one screen. If a row here looks off, the
+        homepage is off too.
+      </p>
+    </header>
+
+    <div class="t__block">
+      <p class="hud hud--faint t__label">01 — Type scale</p>
+      <div class="t__stack">
+        <p class="t__s1">Display / Archivo 500</p>
+        <p class="t__s2">Heading / Archivo 500</p>
+        <p class="t__s3">Body / Archivo 400 — the quick brown fox jumps over the lazy dog.</p>
+        <p class="t__s4 serif">Serif italic / Instrument Serif — a quieter accent line.</p>
+        <p class="hud hud--muted">Mono hud label / JetBrains Mono 0.15em</p>
+      </div>
+    </div>
+
+    <div class="t__block">
+      <p class="hud hud--faint t__label">02 — Surfaces &amp; rules</p>
+      <div class="t__swatches">
+        <div class="t__swatch t__swatch--bg"><span class="hud">--bg</span></div>
+        <div class="t__swatch t__swatch--raised"><span class="hud">--bg-raised</span></div>
+        <div class="t__swatch t__swatch--sunken"><span class="hud">--bg-sunken</span></div>
+        <div class="t__swatch t__swatch--invert"><span class="hud">--invert</span></div>
+      </div>
+      <div class="t__rules">
+        <div class="t__rule t__rule--line"></div>
+        <div class="t__rule t__rule--strong"></div>
+      </div>
+    </div>
+
+    <div class="t__block">
+      <p class="hud hud--faint t__label">03 — Link cells</p>
+      <div class="t__links">
+        <a class="link" href="#a">
+          <span class="link__label"
+            ><span class="link__num hud">01</span><span class="link__name">Anchor</span></span
+          >
+          <svg class="link__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <path d="M7 17 17 7M9 7h8v8" />
+          </svg>
+        </a>
+        <a class="link" href="#b">
+          <span class="link__label"
+            ><span class="link__num hud">02</span><span class="link__name">Anchor</span></span
+          >
+          <svg class="link__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <path d="M7 17 17 7M9 7h8v8" />
+          </svg>
+        </a>
+      </div>
+    </div>
+
+    <div class="t__block">
+      <p class="hud hud--faint t__label">04 — Checks</p>
+      <ul class="t__checks" id="checks">
+        <li data-check="radius">No element carries a border-radius</li>
+        <li data-check="overflow">No horizontal overflow at this width</li>
+        <li data-check="fonts">Self-hosted fonts loaded</li>
+        <li data-check="theme">Theme attribute resolves to light or dark</li>
+      </ul>
+      <p class="hud hud--faint t__viewport" id="viewport"></p>
+    </div>
+  </section>
+</Base>
+
+<script is:inline>
+  (function () {
+    var root = document.documentElement;
+    var vp = document.getElementById('viewport');
+
+    function paintViewport() {
+      vp.textContent =
+        'Viewport ' +
+        window.innerWidth +
+        '×' +
+        window.innerHeight +
+        ' · scrollWidth ' +
+        root.scrollWidth +
+        ' · clientWidth ' +
+        root.clientWidth +
+        ' · ' +
+        root.dataset.theme;
+    }
+
+    function runChecks() {
+      var results = {};
+
+      // radius — nothing on this site should be rounded
+      var radiusHits = 0;
+      document.querySelectorAll('*').forEach(function (el) {
+        var r = getComputedStyle(el).borderRadius;
+        if (r && r !== '0px' && r !== '0%') radiusHits++;
+      });
+      results.radius = radiusHits === 0;
+
+      // overflow
+      results.overflow = root.scrollWidth <= root.clientWidth + 1;
+
+      // fonts — must be asked after document.fonts is settled
+      var loaded = [];
+      document.fonts.forEach(function (f) {
+        if (f.status === 'loaded') loaded.push(f.family);
+      });
+      var need = ['Archivo', 'JetBrains Mono', 'Instrument Serif'];
+      results.fonts = need.every(function (n) {
+        return loaded.some(function (l) {
+          return l.indexOf(n) !== -1;
+        });
+      });
+
+      // theme
+      results.theme = root.dataset.theme === 'light' || root.dataset.theme === 'dark';
+
+      document.querySelectorAll('#checks li').forEach(function (li) {
+        var ok = results[li.dataset.check];
+        li.classList.toggle('is-ok', ok === true);
+        li.classList.toggle('is-bad', ok !== true);
+        li.setAttribute('data-state', ok === true ? 'pass' : 'fail');
+      });
+
+      paintViewport();
+    }
+
+    // Fonts and layout must both settle before the checks mean anything.
+    var started = false;
+    function start() {
+      if (started) return;
+      started = true;
+      requestAnimationFrame(function () {
+        requestAnimationFrame(runChecks);
+      });
+    }
+
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(start);
+      // Fallback in case fonts.ready never resolves.
+      setTimeout(start, 3000);
+    } else {
+      start();
+    }
+
+    window.addEventListener('load', runChecks);
+    window.addEventListener('resize', function () {
+      paintViewport();
+      runChecks();
+    });
+
+    var toggle = document.getElementById('theme-toggle');
+    if (toggle) {
+      toggle.addEventListener('click', function () {
+        window.requestAnimationFrame(runChecks);
+      });
+    }
+  })();
+</script>
