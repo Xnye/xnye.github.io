@@ -1,24 +1,40 @@
 ---
 import Base from '../layouts/Base.astro';
+
+const links = [
+  { label: 'GitHub', href: 'https://github.com/Xnye', external: true },
+  { label: '邮箱', href: 'mailto:2010983680@qq.com', external: false },
+];
 ---
 
 <Base title="0x000B10G" description="随便写点东西的地方。">
-  <h1 class="name">0x000B10G</h1>
+  <h1 class="lede">随便写点东西的地方。</h1>
 
-  <p class="intro">随便写点东西的地方。</p>
+  <hr class="rule" />
 
-  <div class="text">
+  <div class="body">
     <p>
-      这里还没有什么内容。想写的时候会往这儿放。
+      这里还没有什么内容。想写的时候会往这儿放，可能是几段话，也可能只是一张图。
+    </p>
+    <p>
+      慢慢来。
     </p>
   </div>
 
-  <nav class="links" aria-label="链接">
-    <a href="https://github.com/Xnye" target="_blank" rel="noopener noreferrer">GitHub</a>
-    <a href="mailto:2010983680@qq.com">邮箱</a>
-  </nav>
-
-  <footer class="foot">
-    <span>© {new Date().getFullYear()} 0x000B10G</span>
-  </footer>
+  <ul class="rows">
+    {
+      links.map((link) => (
+        <li>
+          <a
+            href={link.href}
+            target={link.external ? '_blank' : undefined}
+            rel={link.external ? 'noopener noreferrer' : undefined}
+          >
+            <span>{link.label}</span>
+            <span class="arr" aria-hidden="true">↗</span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
 </Base>

@@ -20,13 +20,25 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <link rel="canonical" href={canonical} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <meta name="color-scheme" content="light dark" />
-    <meta name="theme-color" content="#f7f6f3" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#101012" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#e9e7e2" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#08080a" media="(prefers-color-scheme: dark)" />
   </head>
 
   <body>
-    <main class="page">
-      <slot />
-    </main>
+    <div class="sheet">
+      <header class="top">
+        <a class="brand" href="/">0x000B10G</a>
+        <span class="top__side">2026</span>
+      </header>
+
+      <main class="main">
+        <slot />
+      </main>
+
+      <footer class="bottom">
+        <span>© 2026 0x000B10G</span>
+        <span>Archivo · Astro</span>
+      </footer>
+    </div>
   </body>
 </html>

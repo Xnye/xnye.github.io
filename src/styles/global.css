@@ -7,22 +7,31 @@
 }
 
 :root {
-  --bg: #f7f6f3;
-  --ink: #17171a;
+  /* the page sits behind the sheet, a shade deeper */
+  --page: #e9e7e2;
+  --bg: #faf9f6;
+
+  --ink: #1a1a1d;
   --muted: #63636b;
-  --faint: #97979f;
-  --rule: #dcdad5;
+  --faint: #9c9ca3;
+
+  --line: #e2dfd8;
+  --line-strong: #c4c0b7;
 
   color-scheme: light;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #101012;
-    --ink: #ececea;
-    --muted: #a0a0a8;
-    --faint: #71717a;
-    --rule: #2a2a2e;
+    --page: #08080a;
+    --bg: #141416;
+
+    --ink: #eaeae8;
+    --muted: #97979f;
+    --faint: #67676f;
+
+    --line: #27272b;
+    --line-strong: #3e3e45;
 
     color-scheme: dark;
   }
@@ -41,13 +50,12 @@ html {
 }
 
 body {
-  min-height: 100vh;
-  background: var(--bg);
+  background: var(--page);
   color: var(--ink);
   font-family: 'Archivo', system-ui, -apple-system, 'Segoe UI', 'PingFang SC',
     'Microsoft YaHei', sans-serif;
   font-size: 17px;
-  line-height: 1.72;
+  line-height: 1.7;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -57,66 +65,158 @@ body {
   color: var(--bg);
 }
 
-.page {
-  max-width: 33rem;
-  margin: 0 auto;
-  padding: clamp(3.5rem, 14vh, 8rem) 1.5rem 3rem;
-}
-
-.name {
-  font-size: 1.4rem;
-  font-weight: 600;
-  letter-spacing: -0.012em;
-  line-height: 1.3;
-}
-
-.intro {
-  margin-top: 1.4rem;
-  color: var(--muted);
-}
-
-.text {
-  margin-top: 1.5rem;
-}
-
-.text p + p {
-  margin-top: 1.1em;
-}
-
-.links {
-  margin-top: 2.2rem;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.35rem 1.4rem;
-  font-size: 0.95rem;
-}
-
 a {
   color: inherit;
   text-decoration: none;
-  border-bottom: 1px solid var(--rule);
-  padding-bottom: 1px;
-  transition: border-color 120ms ease;
-}
-
-a:hover {
-  border-color: var(--ink);
 }
 
 :focus-visible {
-  outline: 2px solid var(--muted);
+  outline: 2px solid var(--line-strong);
   outline-offset: 3px;
-  border-radius: 1px;
 }
 
-.foot {
-  margin-top: clamp(3rem, 9vh, 5rem);
-  padding-top: 1.1rem;
-  border-top: 1px solid var(--rule);
+/* ============================================================
+   The sheet — a bordered column standing on the page.
+   Full height, so the side rules run all the way down.
+   ============================================================ */
+
+.sheet {
+  width: 100%;
+  max-width: 50rem;
+  margin: 0 auto;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  border-inline: 1px solid var(--line);
+}
+
+/* ============================================================
+   Top bar
+   ============================================================ */
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  height: 3.4rem;
+  padding-inline: clamp(1.5rem, 5vw, 3rem);
+  border-bottom: 1px solid var(--line);
+  flex: none;
+}
+
+.brand {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.top__side {
+  font-size: 0.8125rem;
+  color: var(--faint);
+  white-space: nowrap;
+}
+
+/* ============================================================
+   Main — starts near the top bar, not floating in the middle
+   ============================================================ */
+
+.main {
+  flex: 1;
+  padding: clamp(3rem, 11vh, 6.5rem) clamp(1.5rem, 5vw, 3rem)
+    clamp(2.5rem, 7vh, 4rem);
+}
+
+.lede {
+  max-width: 24ch;
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 500;
+  line-height: 1.22;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+.rule {
+  width: 2.5rem;
+  height: 1px;
+  margin-block: clamp(1.5rem, 3.5vw, 2.1rem);
+  background: var(--line-strong);
+  border: 0;
+}
+
+.body {
+  max-width: 44ch;
+  color: var(--muted);
+  font-size: 1.0625rem;
+  line-height: 1.78;
+}
+
+.body p + p {
+  margin-top: 0.9em;
+}
+
+/* ============================================================
+   Rows — hairline list, the frame's interior detail
+   ============================================================ */
+
+.rows {
+  list-style: none;
+  margin-top: clamp(2.2rem, 5vw, 3.2rem);
+  border-top: 1px solid var(--line);
+}
+
+.rows li {
+  border-bottom: 1px solid var(--line);
+}
+
+.rows a {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 0;
+  font-size: 0.9375rem;
+  color: var(--muted);
+  transition: color 150ms ease;
+}
+
+.rows a:hover {
+  color: var(--ink);
+}
+
+.rows .arr {
+  font-size: 0.8125rem;
+  color: var(--faint);
+  transition: color 150ms ease;
+}
+
+.rows a:hover .arr {
+  color: var(--muted);
+}
+
+/* ============================================================
+   Bottom bar
+   ============================================================ */
+
+.bottom {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   justify-content: space-between;
   gap: 0.4rem 1rem;
-  font-size: 0.82rem;
+  padding: 1.05rem clamp(1.5rem, 5vw, 3rem);
+  border-top: 1px solid var(--line);
+  font-size: 0.8125rem;
   color: var(--faint);
+  flex: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 1ms !important;
+  }
 }
