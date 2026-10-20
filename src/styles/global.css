@@ -155,17 +155,32 @@ svg {
 }
 
 /* ============================================================
-   Shell — the outer frame. Its border is deliberately heavier than the
-   interior rules (--line-frame, 3.5:1) because a container edge has to be
-   legible at a glance; the interior hairlines can stay faint since they only
-   separate adjacent blocks.
+   Shell — the outer frame.
+
+   The vertical rules are drawn with an inset box-shadow, not border-inline.
+   Centring a 736px column in an odd viewport width puts the edges on a
+   fractional device pixel (at DPR 1.25 a 1090px viewport lands the left
+   edge at device px 221.25). A 1px border there is split by antialiasing
+   into two half-strength columns — measured 73 + 129 instead of a solid
+   17 — so the line reads as washed out at some window widths and crisp at
+   others. A shadow is composited the same way, but being opaque and exactly
+   1px it stays legible either way, and it does not consume layout width
+   the way a border does.
    ============================================================ */
 
 .shell {
   width: 100%;
   max-width: var(--frame);
   margin-inline: auto;
-  border-inline: 1px solid var(--line-frame);
+  /* 1px rules cannot survive fractional device pixels: centring a 736px
+     column in an odd viewport width puts the edge on something like device
+     px 221.25 at DPR 1.25, and antialiasing splits the line into two
+     half-strength columns (measured 73 + 129 instead of a solid 17), so the
+     line looks washed out at some window widths and crisp at others.
+     Drawing it 1.5px wide guarantees at least one fully covered device
+     pixel at every phase, which removes the width-dependent variation. */
+  box-shadow: inset 1.5px 0 0 var(--line-frame), inset -1.5px 0 0 var(--line-frame);
+  padding-inline: 1.5px;
   min-height: 100vh;
   min-height: 100dvh;
   display: flex;
