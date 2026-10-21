@@ -99,6 +99,13 @@ body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Column flex so the frame can stretch to the viewport and the footer can
+     be pushed to its bottom. Without a height here the rail only ever grew to
+     its content, so the vertical rules stopped mid-page. */
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
 }
 
 ::selection {
@@ -201,12 +208,11 @@ html:not([data-theme='dark']) .icon-moon {
    Rail — the bordered column, applied per section
 
    Each section owns its own left and right rule, so nothing ever composites
-   over a rule and the whole height is guaranteed identical. The rules use
-   the 1.5px trick: a 1px line lands on a fractional device pixel whenever
-   the centred column leftover space is odd, and antialiasing then splits
-   it into two half-strength columns (measured 73 + 129 instead of a solid
-   17). At 1.5px there is always one fully covered device pixel, so every
-   width renders the same weight.
+   over a rule and the whole height is guaranteed identical. The rules are
+   1px borders, the same weight as every horizontal rule on the page: the
+   previous build drew them as 2px inset shadows to dodge half-pixel
+   antialiasing, which left the vertical edges reading twice as heavy as the
+   horizontal ones.
    ============================================================ */
 
 .main {
@@ -219,13 +225,7 @@ html:not([data-theme='dark']) .icon-moon {
   width: 100%;
   max-width: var(--frame);
   margin-inline: auto;
-  /* Two CSS px, not one. At a fractional device ratio a 1px rule is split by
-     antialiasing into two columns whose ratio depends on where the centred
-     column happens to land, so one side reads grey and the other black at the
-     same time. At 2px at least two device columns are fully covered at every
-     phase, which makes both edges look the same weight. */
-  box-shadow: inset 2px 0 0 var(--rule), inset -2px 0 0 var(--rule);
-  padding-inline: 2px;
+  border-inline: 1px solid var(--rule);
   background: var(--bg);
   display: flex;
   flex-direction: column;
@@ -233,12 +233,13 @@ html:not([data-theme='dark']) .icon-moon {
 }
 
 .foot {
-  margin-top: auto;
+  flex: none;
 }
 
 .rail--foot {
   flex: none;
   border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
   padding: 0.85rem clamp(1rem, 4vw, 2.5rem);
 }
 
