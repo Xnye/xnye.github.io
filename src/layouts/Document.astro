@@ -1,0 +1,94 @@
+---
+/**
+ * The document shell: head, header bar, the one column, footer.
+ *
+ * The page body is passed as `<slot />` and is expected to be the column's
+ * content — the rails belong to `.frame`, so a page never re-declares them.
+ */
+import '../styles/global.css';
+import ThemeToggle from '../components/ThemeToggle.astro';
+
+interface Props {
+  /** Full document title; pages compose it from the site name themselves. */
+  title: string;
+  description?: string;
+}
+
+const SITE = '0x000B10G';
+const { title, description = SITE } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const year = new Date().getFullYear();
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta name="theme-color" content="#f2f1ee" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#121316" media="(prefers-color-scheme: dark)" />
+
+    <!-- Chinese webfont, sliced by unicode-range: only the slices covering
+         characters on the page get fetched. -->
+    <link rel="preconnect" href="https://fonts.loli.net" />
+    <link rel="preconnect" href="https://gstatic.loli.net" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.loli.net/css2?family=Noto+Sans+SC:wght@400&display=swap"
+    />
+
+    <!-- Runs before first paint so a dark-mode reader never sees a light
+         flash. Kept inline: a separate request would arrive too late. -->
+    <script is:inline>
+      (function () {
+        var stored;
+        try {
+          stored = localStorage.getItem('theme');
+        } catch (e) {
+          /* Storage can be blocked; the media query still decides. */
+        }
+        var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        var theme = stored === 'light' || stored === 'dark' ? stored : prefersDark ? 'dark' : 'light';
+        document.documentElement.dataset.theme = theme;
+      })();
+    </script>
+  </head>
+
+  <body>
+    <!-- One column, three bands: bar, content, footer. Each band is a `.frame`
+         of the same width, so all of them share the same two vertical rules. -->
+    <header class="frame site-header">
+      <a class="site-brand" href="/">{SITE}</a>
+      <ThemeToggle />
+    </header>
+
+    <main class="frame">
+      <slot />
+    </main>
+
+    <footer class="frame site-footer">
+      <p data-type="hud" data-tone="faint">© {year} {SITE}</p>
+    </footer>
+
+    <script is:inline>
+      (function () {
+        var root = document.documentElement;
+        var button = document.getElementById('theme-toggle');
+        if (!button) return;
+        button.addEventListener('click', function () {
+          var next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+          root.dataset.theme = next;
+          try {
+            localStorage.setItem('theme', next);
+          } catch (e) {
+            /* Nothing to persist to; the session still switches. */
+          }
+        });
+      })();
+    </script>
+  </body>
+</html>

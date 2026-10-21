@@ -1,0 +1,89 @@
+/* Short viewports: landscape phones, small windows, and anything else under
+   500px of height.
+
+   Almost nothing here restates a rule — it restates the custom properties the
+   layout already consumes, so the dense and the roomy versions of the page can
+   never drift apart. At 500px of height the bar has to stop being 48px tall
+   (12–15% of the viewport) and the type scale has to come down with it. */
+
+@media (max-height: 31.25rem) {
+  :root {
+    --nav-h: 2.5rem;
+    --theme-cell-w: 2.75rem;
+    --footer-pad-block: 0.6rem;
+
+    --row-pad-block: 0.85rem;
+    --row-gap: 0.25rem;
+    --row-title-size: 1rem;
+    --row-summary-size: 0.8125rem;
+    --row-summary-lh: 1.5;
+
+    --post-pad-top: 1.25rem;
+    --post-pad-bottom: 2rem;
+    --post-back-gap: 1rem;
+    --post-head-pad-bottom: 0.85rem;
+    --post-title-margin-top: 0.4rem;
+    /* Height-driven here: width-based vw would keep the title large exactly
+       when the viewport is wide but short. */
+    --post-title-size: clamp(1.125rem, 3vh, 1.5rem);
+    --post-title-lh: 1.25;
+
+    --prose-margin-top: 1rem;
+    --prose-size: 0.9375rem;
+    --prose-lh: 1.7;
+    --prose-h2-margin-top: 1.4em;
+    --prose-h2-size: 1.125rem;
+  }
+
+  /* At 40px of bar height a 1px bottom border would leave the two cells 39px
+     tall, just under the 40px minimum target size, so the rule moves into an
+     inset shadow and the cells stay a full 40px. */
+  .site-header {
+    border-bottom-width: 0;
+    box-shadow: inset 0 -1px 0 var(--rule);
+  }
+}
+
+/* Motion. Deliberately small: a short fade with a few pixels of travel, and a
+   stagger on the list so the rows arrive in reading order. Nothing here is
+   load-bearing — with animation off the page is already in its final state
+   because the only animated property starts from the resting value. */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(var(--motion-shift));
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  .post-row,
+  .post > * {
+    animation: rise var(--motion-dur) ease-out backwards;
+  }
+
+  /* Stagger by position. Capped at six steps by the modifiers below, so a long
+     archive never makes the last row wait. */
+  .post-row:nth-child(1) { animation-delay: calc(var(--motion-step) * 0); }
+  .post-row:nth-child(2) { animation-delay: calc(var(--motion-step) * 1); }
+  .post-row:nth-child(3) { animation-delay: calc(var(--motion-step) * 2); }
+  .post-row:nth-child(4) { animation-delay: calc(var(--motion-step) * 3); }
+  .post-row:nth-child(5) { animation-delay: calc(var(--motion-step) * 4); }
+  .post-row:nth-child(n + 6) { animation-delay: calc(var(--motion-step) * 5); }
+
+  .post > * { animation-delay: var(--motion-step); }
+}
+
+/* About the user, not the viewport: applies at every size. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
+}

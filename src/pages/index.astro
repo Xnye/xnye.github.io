@@ -1,52 +1,23 @@
 ---
-import Base from '../layouts/Base.astro';
-import { getCollection } from 'astro:content';
+import Document from '../layouts/Document.astro';
+import PostList from '../components/PostList.astro';
+import { getPublishedPosts } from '../lib/posts';
 
-const posts = (await getCollection('posts', ({ data }) => !data.draft)).sort(
-  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
-);
-
-const fmt = (d: Date) =>
-  new Intl.DateTimeFormat('zh-CN', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  })
-    .format(d)
-    .replace(/\//g, '-');
+const posts = await getPublishedPosts();
 ---
 
-<Base title="0x000B10G">
+<Document title="0x000B10G">
   {
     posts.length === 0 ? (
-      <p class="empty hud hud--faint">No posts yet</p>
+      <p class="list-empty" data-type="mono" data-tone="faint">
+        No posts yet.
+      </p>
     ) : (
-      <div class="posts">
+      <div class="post-list">
         {posts.map((post) => (
-          <a class="post" href={`/posts/${post.id}/`}>
-            <p class="post__date hud">{fmt(post.data.date)}</p>
-            <div class="post__body">
-              <h2 class="post__title">
-                {post.data.title}
-                <svg
-                  class="post__arrow"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  aria-hidden="true"
-                >
-                  <path d="M5 12h14" />
-                  <path d="m12 5 7 7-7 7" />
-                </svg>
-              </h2>
-              {post.data.summary && <p class="post__summary">{post.data.summary}</p>}
-            </div>
-          </a>
+          <PostList post={post} />
         ))}
       </div>
     )
   }
-</Base>
+</Document>

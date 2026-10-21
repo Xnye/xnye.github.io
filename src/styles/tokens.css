@@ -1,0 +1,124 @@
+/* The site's palette, type stack, spacing constants and the small shared
+   primitives. One place to re-skin the whole site.
+
+   Every dimension that changes on a short viewport lives here as a custom
+   property, so `short-viewport.css` only has to restate values, never rules. */
+
+:root {
+  --bg: #f2f1ee;
+  --bg-raised: #faf9f7;
+
+  --ink: #101014;
+  --ink-strong: #000;
+
+  /* Two legible steps below `--ink`: body-adjacent copy and metadata. */
+  --muted: rgb(16 16 20 / 0.62);
+  --faint: rgb(16 16 20 / 0.42);
+
+  /* Rules are drawn as whole device pixels. A translucent hairline very often
+     lands on a fractional pixel at DPR 1.25+ and gets split across two device
+     pixels, which reads as a washed-out line at some window widths and crisp
+     at others, so `--line` is only used for rules that sit between content
+     blocks where a fractional split cannot be seen. */
+  --line: rgb(16 16 20 / 0.16);
+  --rule: #101014;
+
+  --invert-bg: #101014;
+  --invert-fg: #f2f1ee;
+  /* The frame is one centred column, and every band of the page — bar,
+     content, footer — is a box of exactly this width, so all three line up on
+     the same two vertical rules. On a wide screen the page background shows on
+     both sides. */
+  --frame: 54rem;
+  --gutter: clamp(1rem, 4vw, 2.5rem);
+  /* --- frame ------------------------------------------------------------ */
+  --nav-h: 3rem;
+  --theme-cell-w: 3rem;
+  --footer-pad-block: 0.85rem;
+
+  /* --- post list -------------------------------------------------------- */
+  /* The row is a single column: a metadata line, then the title, then an
+     optional summary. Nothing sits beside anything else. */
+  --row-pad-block: 1.5rem;
+  --row-gap: 0.4rem;
+  --row-title-size: 1.25rem;
+  --row-title-lh: 1.3;
+  --row-summary-size: 0.875rem;
+  --row-summary-lh: 1.65;
+
+  /* --- post page -------------------------------------------------------- */
+  --post-pad-top: 2.25rem;
+  --post-pad-bottom: 3rem;
+  --post-back-gap: 1.75rem;
+  --post-head-pad-bottom: 1.4rem;
+  --post-title-margin-top: 0.6rem;
+  --post-title-size: clamp(1.5rem, 3.2vw, 2.1rem);
+  --post-title-lh: 1.24;
+
+  /* --- prose ------------------------------------------------------------ */
+  --prose-margin-top: 1.5rem;
+  --prose-size: 1rem;
+  --prose-lh: 1.78;
+  --prose-h2-margin-top: 2em;
+  --prose-h2-size: 1.25rem;
+
+  /* --- motion ----------------------------------------------------------- */
+  --motion-dur: 200ms;
+  --motion-step: 40ms;
+  --motion-shift: 6px;
+
+  --font-display: 'Archivo', 'Noto Sans SC', system-ui, -apple-system,
+    'Segoe UI', sans-serif;
+  --font-body: 'Archivo', 'Noto Sans SC', system-ui, -apple-system, 'Segoe UI',
+    sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  color-scheme: light;
+}
+
+html[data-theme='dark'] {
+  --bg: #121316;
+  --bg-raised: #101014;
+
+  --ink: #f2f1ee;
+  --ink-strong: #fff;
+
+  --muted: rgb(242 241 238 / 0.6);
+  --faint: rgb(242 241 238 / 0.38);
+
+  --line: rgb(242 241 238 / 0.15);
+  --rule: #f2f1ee;
+
+  --invert-bg: #f2f1ee;
+  --invert-fg: #0b0b0c;
+
+  color-scheme: dark;
+}
+
+/* Monospaced metadata: dates, labels, small print, the back link. Tabular
+   figures and near-normal tracking, so a date reads as machine output rather
+   than as a shout. `line-height: 1` keeps it on the pixel grid next to the
+   rules. */
+[data-type='mono'] {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+/* The same face where a label carries words: uppercase and tracked out, which
+   is the only place the site uses either. */
+[data-type='hud'] {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+[data-tone='faint'] {
+  color: var(--faint);
+}

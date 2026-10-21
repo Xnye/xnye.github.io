@@ -1,0 +1,121 @@
+/* One centred column holds the whole page: the bar, the content and the footer
+   are three bands of the same width, stacked, lined up on the same two
+   vertical rules. On a screen wider than the column the page background shows
+   on both sides, so the frame reads as a sheet rather than as a full-bleed
+   layout.
+
+   Because every band is also `.frame`, each band-specific rule has to restate
+   whatever it does not want from the shared one — in particular `flex: none`,
+   since `.frame`'s `flex: 1` resolves to `flex-basis: 0%` and would otherwise
+   collapse a band's height to nothing. */
+
+.frame {
+  width: 100%;
+  max-width: var(--frame);
+  margin-inline: auto;
+  border-inline: 1px solid var(--rule);
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+/* Bar: a band of the same column, so its bottom rule runs edge to edge inside
+   the rails and the brand sits on the column's own inset — no second gutter.
+   `flex: none` keeps the bar at exactly `--nav-h` instead of letting it grow. */
+.site-header {
+  display: flex;
+  flex-direction: row;
+  flex: none;
+  align-items: stretch;
+  justify-content: space-between;
+  height: var(--nav-h);
+  border-bottom: 1px solid var(--rule);
+  background: var(--bg);
+}
+
+.site-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-inline: var(--gutter);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+/* A 7px solid square as the logotype mark; square, like every other corner. */
+.site-brand::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  background: var(--ink);
+}
+
+/* Theme switch: the right-hand cell of the bar, separated from the brand by a
+   rule of its own. It is the last thing in the column, so its right edge lands
+   on the column's right rail — no gutter, no second border.
+
+   `border` is zeroed explicitly: a bare `<button>` inherits `2px outset
+   ButtonBorder` from the UA stylesheet, which paints two off-palette greys
+   (#545454 and #ababab) into a bar that is otherwise exactly two colours. */
+.theme-switch {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--theme-cell-w);
+  height: 100%;
+  border: 0;
+  border-left: 1px solid var(--rule);
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+  transition: background-color 120ms ease, color 120ms ease;
+}
+
+.theme-switch:hover {
+  background: var(--invert-bg);
+  color: var(--invert-fg);
+}
+
+.theme-switch svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* The bar shows what the current theme *is*: a sun while the page is light, a
+   moon while it is dark. Both icons are in the DOM and CSS picks one, so the
+   control can never disagree with the page. */
+.icon-sun {
+  display: block;
+}
+
+.icon-moon {
+  display: none;
+}
+
+html[data-theme='dark'] .icon-sun {
+  display: none;
+}
+
+html[data-theme='dark'] .icon-moon {
+  display: block;
+}
+
+/* Content band. `flex: 1` lets it absorb the leftover height, so the column
+   always reaches the footer and the footer sits on the bottom of a short
+   page. */
+main {
+  flex: 1;
+}
+
+/* Footer: the third band, closed with a rule above and below so the sheet reads
+   as sealed rather than as content that fades out. */
+.site-footer {
+  flex: none;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  padding: var(--footer-pad-block) var(--gutter);
+}

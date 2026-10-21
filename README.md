@@ -35,17 +35,27 @@ npm run build   # 生成静态文件到 dist/
 
 ```
 src/
-  content.config.ts       文章集合定义（frontmatter 字段）
-  content/posts/          文章 markdown 放这里
-  layouts/Base.astro      页面骨架：顶栏、主题切换、页脚
-  pages/index.astro       首页，按日期倒序列出文章
-  pages/posts/[slug].astro  文章详情页
-  styles/global.css       全部样式
-public/fonts/             自托管字体（Archivo、JetBrains Mono）
+  content.config.ts          文章集合定义（frontmatter 字段）
+  content/posts/             文章 markdown 放这里
+  lib/posts.ts               取文章、排序、日期格式、文章 URL
+  layouts/Document.astro     <head> + 顶栏 + 栏框 + 页脚
+  components/ThemeToggle.astro  顶栏右侧的明暗切换
+  components/PostList.astro     首页列表的一行
+  pages/index.astro          首页，按日期倒序列出文章
+  pages/posts/[slug].astro   文章详情页
+  styles/global.css          样式入口，按顺序 @import 下面各层
+  styles/reset.css           字体声明与最小重置
+  styles/tokens.css          调色板、字体、所有随视口变化的尺寸
+  styles/frame.css           顶栏、栏框、页脚
+  styles/index-list.css      首页列表
+  styles/post-prose.css      文章页与正文排版
+  styles/short-viewport.css  矮视口（横屏手机）只重写变量
+public/fonts/                自托管字体（Archivo、JetBrains Mono）
 ```
 
-改颜色在 `src/styles/global.css` 顶部的 `:root`，深色模式是 `html[data-theme='dark']`
-里同一组变量。
+改颜色和尺寸都在 `src/styles/tokens.css` 的 `:root`，深色模式是同一文件里
+`html[data-theme='dark']` 那组同名变量。矮视口也只在 `short-viewport.css` 里重写
+这些变量、不重复写规则，所以两种版式不会各自漂移。
 
 ## 第三方
 

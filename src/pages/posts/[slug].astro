@@ -1,36 +1,47 @@
 ---
-import Base from '../../layouts/Base.astro';
-import { getCollection, render } from 'astro:content';
+import Document from '../../layouts/Document.astro';
+import { formatDate, getPublishedPosts, type Post } from '../../lib/posts';
+import { render } from 'astro:content';
 
 export async function getStaticPaths() {
-  const posts = await getCollection('posts', ({ data }) => !data.draft);
+  const posts = await getPublishedPosts();
   return posts.map((post) => ({
     params: { slug: post.id },
     props: { post },
   }));
 }
 
+interface Props {
+  post: Post;
+}
+
 const { post } = Astro.props;
 const { Content } = await render(post);
-
-const fmt = (d: Date) =>
-  new Intl.DateTimeFormat('zh-CN', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  })
-    .format(d)
-    .replace(/\//g, '-');
 ---
 
-<Base title={`${post.data.title} — 0x000B10G`} description={post.data.summary}>
-  <article class="article">
-    <header class="article__head">
-      <p class="article__date hud">{fmt(post.data.date)}</p>
-      <h1 class="article__title">{post.data.title}</h1>
+<Document title={`${post.data.title} — 0x000B10G`} description={post.data.summary}>
+  <article class="post">
+    <a class="post__back" href="/" data-type="mono">
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M19 12H5" />
+        <path d="m12 19-7-7 7-7" />
+      </svg>
+      返回
+    </a>
+    <header class="post__head">
+      <p class="post__date" data-type="mono">{formatDate(post.data.date)}</p>
+      <h1 class="post__title">{post.data.title}</h1>
     </header>
     <div class="prose">
       <Content />
     </div>
   </article>
-</Base>
+</Document>

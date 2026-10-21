@@ -1,0 +1,36 @@
+---
+/**
+ * One row of the home page.
+ *
+ * Order is the design: the date sits above the title, on its own line, in the
+ * monospaced face — machine output first, then the words.
+ */
+import { formatDate, postHref, type Post } from '../lib/posts';
+
+interface Props {
+  post: Post;
+}
+
+const { post } = Astro.props;
+---
+
+<a class="post-row" href={postHref(post)}>
+  <p class="post-row__date" data-type="mono">{formatDate(post.data.date)}</p>
+  <h2 class="post-row__title">
+    {post.data.title}
+    <svg
+      class="post-row__arrow"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M5 12h14" />
+      <path d="m12 5 7 7-7 7" />
+    </svg>
+  </h2>
+  {post.data.summary && <p class="post-row__summary">{post.data.summary}</p>}
+</a>
